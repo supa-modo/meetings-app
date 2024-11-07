@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom CSS to make the date numbers semi-bold */
+.fc-daygrid-day-number {
+  font-weight: 600 !important; /* Ensures it's applied even if FullCalendar applies other styles */
+}
+
+/* Highlight the clicked date with a background color */
+.fc-daygrid-day-number.fc-selected {
+  background-color: #4caf50; /* Green color or any color of your choice */
+  color: white;
+  border-radius: 50%;
+}
+
+/* Add a hover effect to the date cells */
+.fc-daygrid-day-number:hover {
+  background-color: #f0f0f0; /* Light gray background on hover */
+  cursor: pointer;
+}
+
+/* Optionally, you can add more customizations for the hovered dates */
+.fc-daygrid-day-number:hover.fc-day-today {
+  background-color: #ffd700; /* Change color on hover for today's date */
+}
+
+.fc-button-text-color {
+  color: #0000005d;
+}
+.fc-button-bg-color {
+  color: #2c3e50;
+}
