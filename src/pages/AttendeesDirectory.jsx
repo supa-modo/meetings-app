@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ViewAttendeeModal from "../components/ViewAttendeeModal";
 import AddAttendeeModal from "../components/AddAttendeeModal";
 import EditAttendeeModal from "../components/EditAttendeeModal";
-import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
+import { FaPlus, FaTrash, FaEdit, FaSearch } from "react-icons/fa";
 import attendeesData from "../data/attendees.json";
 import Header from "../components/Header";
 
@@ -65,27 +65,30 @@ const AttendeesDirectory = () => {
           <h1 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">
             Attendees Directory
           </h1>
-          <div className="flex flex-col md:flex-row items-center space-x-3 w-full md:w-auto">
+          <div className="flex flex-col md:flex-row items-center space-x-3 w-full md:w-1/2">
             <button
               onClick={() => setShowAddModal(true)}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 flex items-center"
+              className="bg-blue-500 text-center text-white px-4 w-1/3 py-2 font-semibold rounded-md hover:bg-blue-600 flex items-center"
             >
               <FaPlus className="mr-2" /> Add New Attendee
             </button>
-            <input
-              type="text"
-              placeholder="Search Name, email or phone to filter ..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="p-2 border border-gray-300 rounded-md mb-2 md:mb-0 w-full md:w-64"
-            />
+            <div className="flex items-center bg-gray-200 border border-gray-300 md:text-base text-sm rounded-md px-4 py-[10px] md:py-2 w-2/3">
+              <FaSearch className="text-gray-600 md:mx-4" />
+              <input
+                type="text"
+                placeholder="Search Name, email or phone to filter"
+                className="bg-transparent focus:outline-none pl-2 w-full text-gray-700 font-semibold"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
         </div>
 
         <table className="min-w-full bg-white shadow-md rounded-md overflow-hidden">
           <thead className="bg-gray-500">
             <tr className="text-white font-semibold">
-              <th className="p-4 text-left">#</th>{" "}
+              <th className="p-4 text-left">#</th>
               {/* Auto-numbering Column Header */}
               <th className="p-3 text-left">Name</th>
               <th className="p-3 text-left">Email</th>
