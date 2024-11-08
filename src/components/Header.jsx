@@ -36,7 +36,7 @@ function Header() {
       </div>
 
       {/* Right Section - Notifications and Profile */}
-      <div className="flex items-center space-x-4 md:space-x-7 md:pr-36">
+      <div className="flex items-center space-x-4 md:space-x-5 lg:space-x-7 lg:pr-32">
         {/* Notifications */}
         <div className="relative">
           <FaBell
