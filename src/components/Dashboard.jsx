@@ -128,11 +128,17 @@ function DashboardContent() {
                 <MdOutlineClearAll size={25} className="mr-3" />
                 All Meetings Overview
               </button>
-              <button onClick={handleDirectoryClick} className="w-full flex items-center px-4 py-4 font-semibold bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition">
+              <button
+                onClick={handleDirectoryClick}
+                className="w-full flex items-center px-4 py-4 font-semibold bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition"
+              >
                 <FaUserFriends className="mr-3" />
                 Attendees Directory
               </button>
-              <button className="w-full flex items-center px-4 py-4 font-semibold bg-amber-600 text-white rounded-md shadow-md hover:bg-amber-700 transition">
+              <button
+                // onClick={handleAddNewAttendee}
+                className="w-full flex items-center px-4 py-4 font-semibold bg-amber-600 text-white rounded-md shadow-md hover:bg-amber-700 transition"
+              >
                 <FaPlus className="mr-3" />
                 Add New Attendee to Directory
               </button>
@@ -145,9 +151,7 @@ function DashboardContent() {
         </section>
 
         {/* New Meeting Modal */}
-        {isOpen && (
-          <NewMeetingModal onClose={handleCloseModal} />
-        )}
+        {isOpen && <NewMeetingModal onClose={handleCloseModal} />}
 
         {/* Upcoming Meetings and Notifications */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">

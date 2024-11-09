@@ -4,7 +4,7 @@
     "name": "John Doe",
     "email": "john.doe@example.com",
     "phone": "+123456789",
-    "organization": "Company A",
+    "organization": "Global Networks",
     "title": "Manager"
   },
   {
@@ -12,7 +12,7 @@
     "name": "Jane Smith",
     "email": "jane.smith@example.com",
     "phone": "+987654321",
-    "organization": "Company B",
+    "organization": "FinTech Pros",
     "title": "Analyst"
   },
   {
@@ -20,7 +20,7 @@
     "name": "John Doe",
     "email": "john.doe@example.com",
     "phone": "+123456789",
-    "organization": "Company A",
+    "organization": "Tech Innovations Inc.",
     "title": "Manager"
   },
   {
@@ -28,7 +28,7 @@
     "name": "Jane Smith",
     "email": "jane.smith@example.com",
     "phone": "+987654321",
-    "organization": "Company B",
+    "organization": "Tech Innovations Inc.",
     "title": "Analyst"
   },
   {
@@ -36,7 +36,7 @@
     "name": "John Doe",
     "email": "john.doe@example.com",
     "phone": "+123456789",
-    "organization": "Company A",
+    "organization": "Creative Solutions LLC",
     "title": "Manager"
   },
   {
@@ -44,7 +44,7 @@
     "name": "Jane Smith",
     "email": "jane.smith@example.com",
     "phone": "+987654321",
-    "organization": "Company B",
+    "organization": "Global Networks",
     "title": "Analyst"
   },
   {
@@ -60,7 +60,7 @@
     "name": "Jane Smith",
     "email": "janesmith@example.com",
     "phone": "987-654-3210",
-    "organization": "Business Inc",
+    "organization": "Business Example Inc",
     "title": "Analyst"
   },
   {
@@ -68,7 +68,7 @@
     "name": "Alice Johnson",
     "email": "alice.johnson@example.com",
     "phone": "123-456-7890",
-    "organization": "TechCorp",
+    "organization": "Tech Innovations Inc.",
     "title": "Manager"
   },
   {
@@ -76,7 +76,7 @@
     "name": "John Doe",
     "email": "john.doe@example.com",
     "phone": "+123456789",
-    "organization": "Company A",
+    "organization": "Creative Solutions LLC",
     "title": "Manager"
   },
   {
@@ -84,7 +84,7 @@
     "name": "Jane Smith",
     "email": "jane.smith@example.com",
     "phone": "+987654321",
-    "organization": "Company B",
+    "organization": "Global Networks",
     "title": "Analyst"
   },
   {
@@ -124,7 +124,7 @@
     "name": "John Doe",
     "email": "john.doe@example.com",
     "phone": "+123456789",
-    "organization": "Company A",
+    "organization": "FinTech Pros",
     "title": "Manager"
   },
   {
@@ -132,7 +132,7 @@
     "name": "Jane Smith",
     "email": "jane.smith@example.com",
     "phone": "+987654321",
-    "organization": "Company B",
+    "organization": "FinTech Pros",
     "title": "Analyst"
   },
   {

@@ -108,7 +108,7 @@ const AttendeesDirectory = () => {
                 onClick={() => handleViewAttendee(attendee)}
               >
                 <td className="p-3">{index + 1} .</td>
-                <td className="p-3">{attendee.name}</td>
+                <td className="p-3 font-semibold">{attendee.name}</td>
                 <td className="p-3">{attendee.email}</td>
                 <td className="p-3">{attendee.phone}</td>
                 <td className="p-3">{attendee.organization}</td>

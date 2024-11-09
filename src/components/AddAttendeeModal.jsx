@@ -24,57 +24,62 @@ const AddAttendeeModal = ({ onAddAttendee, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white rounded-lg p-6 w-80 shadow-lg relative">
+      <div className="bg-white rounded-lg p-6 w-[50%] shadow-lg relative">
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500"
+          className="absolute top-4 right-4 text-xl text-gray-500"
         >
           <FaTimes />
         </button>
-        <h2 className="text-lg font-bold text-gray-800 mb-4">
+        <h2 className="text-xl font-bold text-gray-700 mb-3">
           Add New Attendee
         </h2>
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="border p-2 w-full mb-2"
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="border p-2 w-full mb-2"
-        />
-        <input
-          type="text"
-          placeholder="Phone"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="border p-2 w-full mb-2"
-        />
-        <input
-          type="text"
-          placeholder="Organization"
-          value={organization}
-          onChange={(e) => setOrganization(e.target.value)}
-          className="border p-2 w-full mb-2"
-        />
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="border p-2 w-full mb-4"
-        />
-        <button
-          onClick={handleAdd}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md w-full"
-        >
-          Add Attendee
-        </button>
+        <p className="pl-4 mb-4 font-semibold text-gray-600">Enter the participant's details below</p>
+        <div className=" md:px-14 font-semibold">
+          <input
+            type="text"
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="p-[13px] border border-gray-300 rounded-lg w-full mb-2"
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="p-[13px] border border-gray-300 rounded-lg w-full mb-2"
+          />
+          <input
+            type="text"
+            placeholder="Phone"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="p-[13px] border border-gray-300 rounded-lg w-full mb-2"
+          />
+          <input
+            type="text"
+            placeholder="Organization"
+            value={organization}
+            onChange={(e) => setOrganization(e.target.value)}
+            className="p-[13px] border border-gray-300 rounded-lg w-full mb-2"
+          />
+          <input
+            type="text"
+            placeholder="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="p-[13px] border border-gray-300 rounded-lg w-full mb-2"
+          />
+          <div className=" text-center">
+            <button
+              onClick={handleAdd}
+              className="bg-blue-500 mt-4 text-white px-4 py-2 rounded-md w-full md:w-1/2"
+            >
+              Add Attendee
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

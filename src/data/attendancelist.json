@@ -1,0 +1,93 @@
+[
+  {
+    "name": "Alice Johnson",
+    "email": "alice.johnson@example.com",
+    "phone": "+1234567890",
+    "organization": "Tech Innovations Inc.",
+    "title": "Software Engineer",
+    "meetingRole": "participant",
+    "signatures": {
+      "day1": "",
+      "day2": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA...",
+      "day3": ""
+    }
+  },
+  {
+    "name": "Bob Smith",
+    "email": "bob.smith@example.com",
+    "phone": "+1987654321",
+    "organization": "Creative Solutions LLC",
+    "title": "Project Manager",
+    "meetingRole": "chair",
+    "signatures": {
+      "day1": "",
+      "day2": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA...",
+      "day3": ""
+    }
+  },
+  {
+    "name": "Charlie Zhang",
+    "email": "charlie.zhang@example.com",
+    "phone": "+1231231234",
+    "organization": "Global Networks",
+    "title": "Business Analyst",
+    "meetingRole": "secretary",
+    "signatures": {
+      "day1": "",
+      "day2": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA...",
+      "day3": ""
+    }
+  },
+  {
+    "name": "Diana Lee",
+    "email": "diana.lee@example.com",
+    "phone": "+1239874560",
+    "organization": "FinTech Pros",
+    "title": "Data Scientist",
+    "meetingRole": "participant",
+    "signatures": {
+      "day1": "",
+      "day2": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA...",
+      "day3": ""
+    }
+  },
+  {
+    "name": "Edward Kim",
+    "email": "edward.kim@example.com",
+    "phone": "+1123581321",
+    "organization": "Innovatech Labs",
+    "title": "Researcher",
+    "meetingRole": "rapporteur",
+    "signatures": {
+      "day1": "",
+      "day2": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA...",
+      "day3": ""
+    }
+  },
+  {
+    "name": "Alice Johnson",
+    "email": "alice.johnson@example.com",
+    "phone": "+1234567890",
+    "organization": "Tech Innovations Inc.",
+    "title": "Software Engineer",
+    "meetingRole": "participant",
+    "signatures": {
+      "day1": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA...",
+      "day2": "",
+      "day3": ""
+    }
+  },
+  {
+    "name": "Bob Smith",
+    "email": "bob.smith@example.com",
+    "phone": "+1987654321",
+    "organization": "Creative Solutions LLC",
+    "title": "Project Manager",
+    "meetingRole": "chair",
+    "signatures": {
+      "day1": "",
+      "day2": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA...",
+      "day3": ""
+    }
+  }
+]
