@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -37,6 +37,12 @@ function DashboardContent() {
   const handleDateClick = (arg) => {
     setSelectedDate(arg.dateStr);
   };
+
+  useEffect(() => {
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date().toISOString().split("T")[0];
+    setSelectedDate(today);
+  }, []);
 
   const meetings = {
     "2024-11-07": [

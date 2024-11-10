@@ -13,6 +13,11 @@ import Header from "../components/Header";
 import { IoMdPeople } from "react-icons/io";
 import { MdOutlineAccessTime } from "react-icons/md";
 import NotificationModal from "../components/NotificationModal";
+import {
+  IoCalendarClearOutline,
+  IoCalendarNumberOutline,
+  IoCalendarOutline,
+} from "react-icons/io5";
 
 const MeetingAttendance = () => {
   const [attendees, setAttendees] = useState([]);
@@ -184,7 +189,7 @@ const MeetingAttendance = () => {
               <span>{"Arusha, Tanzania"}</span>
             </div>
             <div className="flex items-center">
-              <FaCalendarAlt size={20} className="mr-[10px]" />
+              <IoCalendarOutline size={20} className="mr-[10px]" />
               <span className="text-green-600 mr-1">{"November 11, 2024"}</span>
               <span>-</span>
               <span className="text-red-700 ml-1">{"November 14, 2024"}</span>
@@ -231,7 +236,7 @@ const MeetingAttendance = () => {
               <FaPlus className="mr-2" /> Add New Participant
             </button>
             {/* </div> */}
-            <div className="flex items-center bg-gray-200 md:text-base text-sm rounded-md w-2/3 px-4 py-[10px] md:py-2 shadow-sm p-2 ">
+            <div className="flex items-center bg-gray-200 border border-gray-300 md:text-base text-sm rounded-md w-2/3 px-4 py-[10px] md:py-2 shadow-sm p-2 ">
               <FaSearch className="text-gray-600 md:mx-4" />
               <input
                 type="text"
@@ -296,10 +301,10 @@ const MeetingAttendance = () => {
                 key={index}
                 className={`${
                   index % 2 === 0 ? "bg-gray-100" : "bg-amber-50"
-                } cursor-pointer hover:bg-gray-300 hover:shadow-md transition duration-200`}
+                } cursor-pointer hover:bg-gray-300 hover:shadow-md transition duration-200 font-semibold text-gray-500`}
               >
                 <td className="p-3">{index + 1} .</td>
-                <td className="p-3">{attendee.name}</td>
+                <td className="p-3 text-gray-700">{attendee.name}</td>
                 <td className="p-3">{attendee.email}</td>
                 <td className="p-3">{attendee.phone}</td>
                 <td className="p-3">{attendee.organization}</td>

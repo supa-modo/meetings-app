@@ -103,11 +103,11 @@ const AttendeesDirectory = () => {
                 key={attendee.id}
                 className={`${
                   index % 2 === 0 ? "bg-gray-100" : "bg-amber-50"
-                } cursor-pointer hover:bg-gray-300 hover:shadow-md transition duration-200`}
+                } cursor-pointer hover:bg-gray-300 hover:shadow-md transition duration-200 font-semibold text-gray-500`}
                 onClick={() => handleViewAttendee(attendee)}
               >
                 <td className="p-3">{index + 1} .</td>
-                <td className="p-3 font-semibold">{attendee.name}</td>
+                <td className="p-3 text-gray-700">{attendee.name}</td>
                 <td className="p-3">{attendee.email}</td>
                 <td className="p-3">{attendee.phone}</td>
                 <td className="p-3">{attendee.organization}</td>

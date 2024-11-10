@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import MeetingCard from "../components/MeetingCard";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
+import { FaSearch, FaTimes } from "react-icons/fa";
 
 const MeetingsPage = () => {
   const meetings = [
     {
-      id: 1,
+      id: 16701020,
       title: "Pre-Budget Review Committee",
       date: "2024-11-07",
       time: "10:00 AM",
@@ -16,27 +17,25 @@ const MeetingsPage = () => {
       attended: 114,
     },
     {
-      id: 2,
+      id: 13291020,
       title: "Monetary Union Project Meeting",
       date: "2024-11-07",
       time: "2:00 PM",
       location: "In-Person",
       description:
         "Meeting to discuss the progress of the Monetary Union project.",
-      attended: 22,
     },
     {
-      id: 3,
+      id: 31241020,
       title: "Client Meeting",
       date: "2024-11-10",
       time: "1:00 PM",
       location: "Hybrid",
       description:
         "Discuss client requirements and expectations for the new project.",
-      attended: 14,
     },
     {
-      id: 4,
+      id: 24301020,
       title: "Team Meeting",
       date: "2024-11-10",
       time: "3:00 PM",
@@ -46,7 +45,7 @@ const MeetingsPage = () => {
       attended: 19,
     },
     {
-      id: 5,
+      id: 32101024,
       title: "Project Planning Meeting",
       date: "2024-11-14",
       time: "1:00 PM",
@@ -56,8 +55,8 @@ const MeetingsPage = () => {
       attended: 38,
     },
     {
-      id: 6,
-      title: "Monetary Union Project Meeting",
+      id: 22431022,
+      title: "Monetary Union Project Planning Client Example Long Text Meeting",
       date: "2024-11-07",
       time: "2:00 PM",
       location: "In-Person",
@@ -66,7 +65,7 @@ const MeetingsPage = () => {
       attended: 100,
     },
     {
-      id: 7,
+      id: 12211021,
       title: "Client Meeting",
       date: "2024-11-10",
       time: "1:00 PM",
@@ -76,7 +75,7 @@ const MeetingsPage = () => {
       attended: 54,
     },
     {
-      id: 8,
+      id: 22301020,
       title: "Team Meeting",
       date: "2024-11-10",
       time: "3:00 PM",
@@ -86,7 +85,7 @@ const MeetingsPage = () => {
       attended: 43,
     },
     {
-      id: 9,
+      id: 2431020,
       title: "Project Planning Meeting",
       date: "2024-11-14",
       time: "1:00 PM",
@@ -129,11 +128,33 @@ const MeetingsPage = () => {
       dotsCount
   );
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredResults, setFilteredResults] = useState([]);
+
+  const handleSearchChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    if (query) {
+      const results = meetings.filter((meeting) =>
+        meeting.title.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredResults(results);
+    } else {
+      setFilteredResults([]);
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    setFilteredResults([]);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
       <div className="md:container mx-auto p-6">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-4">
+        <h1 className="text-2xl font-bold text-amber-700 mb-4">
           Upcoming Meetings
         </h1>
 
@@ -166,55 +187,77 @@ const MeetingsPage = () => {
         </div>
 
         {/* Meetings Table */}
-        <h1 className="text-2xl font-semibold text-gray-800 mb-4">
-          All Meetings
-        </h1>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold text-amber-700 ">
+            All Meetings
+          </h1>
+          <div className="flex items-center bg-gray-200 border border-gray-300 md:text-base text-sm rounded-md w-2/3 px-4 md:py-[7px] shadow-sm ">
+            <FaSearch className="text-gray-600 md:mx-4" />
+            <input
+              type="text"
+              name="search"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              placeholder="Search meeting name or title"
+              className="bg-transparent focus:outline-none pl-2 w-full text-gray-700 font-semibold"
+            />
+            {searchQuery && (
+              <button onClick={clearSearch} className="ml-2 text-gray-500">
+                <FaTimes />
+              </button>
+            )}
+          </div>
+        </div>
+
         <table className="min-w-full bg-white shadow-md rounded-md overflow-hidden">
           <thead className="bg-gray-500">
             <tr className="text-white font-medium">
-              <th className="p-4 text-left">#</th>
-              <th className="p-3 text-left w-1/12">Title</th>{" "}
-              {/* Set width for Title column */}
-              <th className="p-3 text-left w-1/12">Description</th>{" "}
-              {/* Set width for Description column */}
-              <th className="p-3 text-left">Date</th>
-              <th className="p-3 text-left">Time</th>
-              <th className="p-3 text-left">Location</th>
-              <th className="p-3 text-left">Type</th>
+              <th className="p-4 text-left">Meeting ID</th>
+              <th className="pr-3 py-3 text-left">Meeting Title</th>
+              <th className="pr-3 py-3 text-left">Meeting Date</th>
+              <th className="pr-3 py-3 text-left">Time</th>
+              <th className="pr-3 py-3 text-left">Location</th>
+              <th className="pr-3 py-3 text-left">Type</th>
               <th className="pr-3">Attended</th>
             </tr>
           </thead>
           <tbody>
-            {meetings.map((meeting, index) => (
-              <tr
-                key={meeting.id}
-                className={`pl-3 py-3 ${
-                  index % 2 === 0 ? "bg-gray-100" : "bg-amber-50"
-                } cursor-pointer hover:bg-gray-300 hover:shadow-md transition duration-200`}
-                onClick={() => navigate(`/meetings/${meeting.id}`)}
-              >
-                <td className="p-3">{index + 1}.</td>
-                <td className="p-3 font-semibold truncate">
-                  {meeting.title}
-                </td>{" "}
-                {/* Truncate title */}
-                <td className="p-3 truncate">{meeting.description}</td>{" "}
-                {/* Truncate description */}
-                <td className="p-3">{meeting.date}</td>
-                <td className="p-3">{meeting.time}</td>
-                <td className="p-3">{meeting.location}</td>
-                <td className="p-3">
-                  {meeting.location === "Virtual"
-                    ? "Virtual"
-                    : meeting.location === "In-Person"
-                    ? "Physical"
-                    : "Hybrid"}
-                </td>
-                <td className="p-2 font-semibold text-center">
-                  {meeting.attended}
-                </td>
-              </tr>
-            ))}
+            {(filteredResults.length ? filteredResults : meetings).map(
+              (meeting, index) => (
+                <tr
+                  key={meeting.id}
+                  className={`pl-3 py-3 ${
+                    index % 2 === 0 ? "bg-gray-100" : "bg-amber-50"
+                  } cursor-pointer hover:bg-gray-300 hover:shadow-md transition duration-200 font-semibold text-gray-600`}
+                  onClick={() => navigate(`/meetings/${meeting.id}`)}
+                >
+                  <td className="p-3">{meeting.id}</td>
+                  <td className="pr-2 py-3 text-gray-700 text-ellipsis">
+                    {meeting.title}
+                  </td>
+                  <td className="pr-2 py-3">
+                    <span className="text-green-600">{meeting.date}</span> -{" "}
+                    <span className="text-red-500">{meeting.date}</span>
+                  </td>
+                  <td>
+                    <span className="text-gray-600">{meeting.time}</span> -{" "}
+                    <span className="text-gray-600">{meeting.time}</span>
+                  </td>
+
+                  <td className="pr-2 py-3">{meeting.location}</td>
+                  <td className="pr-2 py-3">
+                    {meeting.location === "Virtual"
+                      ? "Virtual"
+                      : meeting.location === "In-Person"
+                      ? "Physical"
+                      : "Hybrid"}
+                  </td>
+                  <td className="pr-2 py-3 font-semibold text-center">
+                    {meeting.attended || "--"}
+                  </td>
+                </tr>
+              )
+            )}
           </tbody>
         </table>
       </div>
