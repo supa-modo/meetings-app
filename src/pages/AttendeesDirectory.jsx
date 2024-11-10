@@ -89,7 +89,6 @@ const AttendeesDirectory = () => {
           <thead className="bg-gray-500">
             <tr className="text-white font-semibold">
               <th className="p-4 text-left">#</th>
-              {/* Auto-numbering Column Header */}
               <th className="p-3 text-left">Name</th>
               <th className="p-3 text-left">Email</th>
               <th className="p-3 text-left">Phone</th>

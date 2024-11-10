@@ -147,7 +147,7 @@ const MeetingsPage = () => {
               <MeetingCard
                 key={meeting.id}
                 meeting={meeting}
-                onClick={() => navigate(`/meetings/${meeting.id}`)} // Navigate to meeting details
+                onClick={() => navigate("/meetings2")}
               />
             ))}
           </div>
@@ -186,7 +186,7 @@ const MeetingsPage = () => {
           </thead>
           <tbody>
             {meetings.map((meeting, index) => (
-              <tr 
+              <tr
                 key={meeting.id}
                 className={`pl-3 py-3 ${
                   index % 2 === 0 ? "bg-gray-100" : "bg-amber-50"

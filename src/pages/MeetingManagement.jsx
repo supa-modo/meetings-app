@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom"; // Import useParams
-import AttendanceList from "../components/AttendanceList";
-import AttendanceModal from "../components/AttendanceModal";
-import OngoingMeetingPanel from "../components/OngoingMeetingPanel";
 import Header from "../components/Header";
 
 // Example meeting data (replace this with a fetch from an API or context)
@@ -97,14 +94,6 @@ const MeetingManagement = () => {
             </button>
           </div>
         </div>
-        <OngoingMeetingPanel />
-
-        {isMeetingStarted && (
-          <AttendanceList
-            attendees={exampleAttendees}
-            onAddAttendance={handleAddAttendance}
-          />
-        )}
 
         {/* Attendance Modal */}
         {showModal && <AttendanceModal onClose={() => setShowModal(false)} />}
