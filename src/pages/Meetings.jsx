@@ -151,9 +151,11 @@ const MeetingsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Header />
-      <div className="md:container mx-auto p-6">
+    <div className="min-h-screen bg-gray-200">
+      <div className="sticky top-0 z-10 bg-white shadow-md">
+        <Header />
+      </div>
+      <div className="md:container mx-auto px-10 py-6 min-h-screen bg-gray-100">
         <h1 className="text-2xl font-bold text-amber-700 mb-4">
           Upcoming Meetings
         </h1>
@@ -188,9 +190,7 @@ const MeetingsPage = () => {
 
         {/* Meetings Table */}
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold text-amber-700 ">
-            All Meetings
-          </h1>
+          <h1 className="text-2xl font-bold text-amber-700 ">All Meetings</h1>
           <div className="flex items-center bg-gray-200 border border-gray-300 md:text-base text-sm rounded-md w-2/3 px-4 md:py-[7px] shadow-sm ">
             <FaSearch className="text-gray-600 md:mx-4" />
             <input

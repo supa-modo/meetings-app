@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ViewAttendeeModal from "../components/ViewAttendeeModal";
 import AddAttendeeModal from "../components/AddAttendeeModal";
 import EditAttendeeModal from "../components/EditAttendeeModal";
-import { FaPlus, FaTrash, FaEdit, FaSearch } from "react-icons/fa";
+import { FaPlus, FaTrash, FaEdit, FaSearch, FaTimes } from "react-icons/fa";
 import attendeesData from "../data/attendees.json";
 import Header from "../components/Header";
 
@@ -57,9 +57,16 @@ const AttendeesDirectory = () => {
     setShowEditModal(true);
   };
 
+  const clearSearch = () => {
+    setSearchTerm("");
+    setFilteredAttendees([]);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
-      <Header />
+      <div className="sticky top-0 z-10 bg-white shadow-md">
+        <Header />
+      </div>
       <div className="md:container mx-auto px-4 p-8">
         <div className="flex flex-col md:flex-row md:justify-between items-center mb-4">
           <h1 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">
@@ -81,6 +88,11 @@ const AttendeesDirectory = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
+              {searchTerm && (
+                <button onClick={clearSearch} className="ml-2 text-gray-500">
+                  <FaTimes />
+                </button>
+              )}
             </div>
           </div>
         </div>

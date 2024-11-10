@@ -1,0 +1,28 @@
+{
+  "2024-11-07": [
+    { "time": "10:00 AM", "title": "Pre-Budget Review Committee" },
+    { "time": "11:30 AM", "title": "Marketing Strategy Session" },
+    { "time": "2:00 PM", "title": "Monetary Union Project Meeting" },
+
+    { "time": "12:00 PM", "title": "Development Roadmap Discussion" },
+    { "time": "4:00 PM", "title": "Team Check-in" }
+  ],
+  "2024-11-10": [
+    { "time": "10:00 AM", "title": "HR Policy Update" },
+    { "time": "1:30 PM", "title": "Design Review" },
+    { "time": "4:00 PM", "title": "Stakeholder Alignment" },
+    { "time": "2:00 PM", "title": "Product Feedback Session" },
+    { "time": "3:00 PM", "title": "Quarterly Business Review" }
+  ],
+  "2024-11-15": [
+    { "time": "9:30 AM", "title": "Sales Team Sync" },
+    { "time": "2:00 PM", "title": "Product Feedback Session" },
+    { "time": "5:00 PM", "title": "Happy Hour" },
+    { "time": "11:30 AM", "title": "Marketing Strategy Session" }
+  ],
+  "2024-11-20": [
+    { "time": "10:00 AM", "title": "HR Policy Update" },
+    { "time": "1:30 PM", "title": "Design Review" },
+    { "time": "4:00 PM", "title": "Stakeholder Alignment" }
+  ]
+}

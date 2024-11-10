@@ -63,7 +63,9 @@ const MeetingManagement = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Header />
+      <div className="sticky top-0 z-10 bg-white shadow-md">
+        <Header />
+      </div>
       <div className="bg-gray-50 md:container mx-auto p-8">
         <h1 className="text-3xl font-semibold text-gray-800 mb-6">
           {meeting.title}

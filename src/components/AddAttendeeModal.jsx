@@ -27,7 +27,7 @@ const AddAttendeeModal = ({ onAddAttendee, onClose }) => {
       <div className="bg-white rounded-lg p-6 w-[50%] shadow-lg relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-xl text-gray-500"
+          className="absolute top-4 right-4 text-xl text-red-500 hover:text-red-700"
         >
           <FaTimes />
         </button>
@@ -38,35 +38,35 @@ const AddAttendeeModal = ({ onAddAttendee, onClose }) => {
         <div className=" md:px-14 font-semibold">
           <input
             type="text"
-            placeholder="Name"
+            placeholder="Participant's Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="p-[13px] border border-gray-300 rounded-lg w-full mb-2"
           />
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Email Address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="p-[13px] border border-gray-300 rounded-lg w-full mb-2"
           />
           <input
             type="text"
-            placeholder="Phone"
+            placeholder="Phone Number"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             className="p-[13px] border border-gray-300 rounded-lg w-full mb-2"
           />
           <input
             type="text"
-            placeholder="Organization"
+            placeholder="Participant's Organization"
             value={organization}
             onChange={(e) => setOrganization(e.target.value)}
             className="p-[13px] border border-gray-300 rounded-lg w-full mb-2"
           />
           <input
             type="text"
-            placeholder="Title"
+            placeholder="Job Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="p-[13px] border border-gray-300 rounded-lg w-full mb-2"

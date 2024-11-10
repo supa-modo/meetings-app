@@ -1,0 +1,106 @@
+.fc {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgb(82, 82, 82);
+}
+
+.fc-daygrid {
+  border: 1px solid #333333d5; /* thick border around the days */
+  border-radius: 6px; /* optional rounded corners */
+  background-color: #f5f5f5; /* background color for the day grid */
+  height: auto;
+}
+
+.fc-daygrid-day {
+  background-color: #fff;
+}
+
+.fc-day-sat,
+.fc-day-sun {
+  background-color: #dfdfdf5d; /* weekend background color */
+}
+
+.fc-day-today {
+  background-color: #ffeeba; /* background color for today's date */
+  border: 2px solid #ffc107; /* border for today's date */
+  color: red;
+}
+
+.fc-week-number {
+  background-color: #ff9800;
+  color: #fff;
+  font-weight: bold;
+  padding: 3px;
+  border-radius: 3px;
+}
+
+.fc-day:hover {
+  background-color: #ad8c614b;
+  cursor: pointer;
+}
+
+.fc-daygrid-day-number {
+  font-size: 14px;
+  font-weight: 600;
+  height: 8px;
+}
+
+:root {
+  --fc-border-color: rgba(177, 175, 175, 0.616);
+  --fc-daygrid-event-dot-width: 5px;
+}
+
+/* Meeting Card Styling */
+.meeting-card {
+  background-color: #f9f9f9;
+  border-left: 4px solid #007bff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.meeting-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* Quick Action Buttons Styling */
+.quick-action-button {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  font-weight: 600;
+  color: #fff;
+  border-radius: 5px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.quick-action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Time slots */
+.fc-timegrid-slot {
+  border-top: 1px solid #ddd; /* slot border */
+}
+
+/* Highlight current time slot */
+.fc-timegrid-now-indicator-line {
+  background-color: #ff5252;
+  height: 2px;
+}
+
+/* Time labels (on the left side) */
+.fc-timegrid-axis {
+  background-color: #f5f5f5; /* time label background */
+  color: #555; /* time label color */
+  padding: 5px;
+  font-weight: bold;
+}
+
+.blur-background {
+  filter: blur(2px);
+  pointer-events: none; /* Prevents interactions while modal is open */
+}

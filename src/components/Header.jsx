@@ -26,7 +26,7 @@ function Header() {
       </div>
 
       {/* Search Bar */}
-      <div className="flex items-center bg-gray-200 md:text-base text-sm rounded-full px-4 py-[10px] md:py-2 w-[45%] md:w-2/5">
+      <div className="flex items-center bg-gray-200 border border-gray-300 md:text-base text-sm rounded-full px-4 py-[10px] md:py-2 w-[45%] md:w-2/5">
         <FaSearch className="text-gray-600 md:mx-4" />
         <input
           type="text"

@@ -9,15 +9,37 @@ import {
   FaChartPie,
   FaBell,
 } from "react-icons/fa";
-import "./DashboardContent.css";
+import "../assets/DashboardContent.css";
 import { MdOutlineClearAll } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import NewMeetingModal from "./NewMeetingModal";
+import meetingsData from "../data/meetings.json";
+import AddAttendeeModal from "./AddAttendeeModal";
 
 function DashboardContent() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isNewMeetingOpen, setIsNewMeetingOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
   const navigate = useNavigate();
+  const [meetings, setMeetings] = useState({});
+
+  // Function to open the modal
+  const handleOpenNewMeetingModal = () => {
+    setIsNewMeetingOpen(true);
+  };
+
+  // Function to close the modal
+  const handleCloseNewMeetingModal = () => {
+    setIsNewMeetingOpen(false);
+  };
+
+  // Function to handle adding a new meeting
+  const handleAddMeeting = (newMeeting) => {
+    console.log("New meeting added:", newMeeting);
+    // Here you can send the new meeting data to your server or state manager
+    // After adding the meeting, close the modal
+    handleCloseNewMeetingModal();
+  };
 
   const handleAllMeetingsClick = () => {
     navigate("/meetings");
@@ -26,16 +48,13 @@ function DashboardContent() {
     navigate("/directory");
   };
 
-  const handleNewMeeting = () => {
-    setIsOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsOpen(false);
-  };
-
   const handleDateClick = (arg) => {
     setSelectedDate(arg.dateStr);
+  };
+
+  const handleAddAttendee = (newAttendee) => {
+    // setAttendees([...attendees, newAttendee]);
+    setShowAddModal(false);
   };
 
   useEffect(() => {
@@ -44,66 +63,77 @@ function DashboardContent() {
     setSelectedDate(today);
   }, []);
 
-  const meetings = {
-    "2024-11-07": [
-      { time: "10:00 AM", title: "Pre-Budget Review Committee" },
-      { time: "2:00 PM", title: "Monetary Union Project Meeting" },
-    ],
-    "2024-11-10": [
-      { time: "1:00 PM", title: "Client Meeting" },
-      { time: "2:00 PM", title: "Project Planning Meeting" },
-    ],
-  };
+  useEffect(() => {
+    setMeetings(meetingsData); // Set the meetings data from JSON
+    const today = new Date().toISOString().split("T")[0];
+    setSelectedDate(today);
+  }, []);
 
   return (
     <main className="px-6 pt-3 pb-6 bg-gray-100 min-h-screen flex-1">
       <div className="md:container mx-auto px-4">
-        <h1 className="md:text-2xl text-lg font-semibold text-gray-600 pb-2 ">
+        <h1 className="md:text-2xl text-lg font-bold text-gray-600 pb-2 ">
           Meetings Scheduler and Management
         </h1>
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {/* Calendar + Meeting Details */}
-          <div className="bg-gray-200 px-6 py-4 rounded-md shadow-lg col-span-2 flex flex-col md:flex-row overflow-hidden max-h-[600px] md:max-h-[480px]">
+          <div className="bg-gray-200 px-6 py-4 rounded-md shadow-lg col-span-2 flex flex-col md:flex-row overflow-hidden max-h-[600px] md:h-[480px]">
             {/* Calendar */}
-            <div className="md:w-[50%] flex-shrink-0">
-              <h2 className="text-amber-900 text-lg font-bold mb-3">
+            <div className="md:w-[45%] flex-shrink-0">
+              <h2 className="text-amber-700 text-xl font-bold mb-3">
                 Calendar View
               </h2>
-              <FullCalendar
-                plugins={[dayGridPlugin, interactionPlugin]}
-                initialView="dayGridMonth"
-                dateClick={handleDateClick}
-                events={[]}
-                headerToolbar={{
-                  left: "prev,next today",
-                  center: "title",
-                  right: "dayGridMonth",
-                }}
-                className="custom-calendar"
-                dayCellClassNames={(date) =>
-                  date.dateStr === selectedDate ? "highlighted-date" : ""
-                }
-              />
+              <div
+                className={`calendar-container ${
+                  showAddModal || isNewMeetingOpen ? "blur-background" : ""
+                }`}
+              >
+                <FullCalendar
+                  plugins={[dayGridPlugin, interactionPlugin]}
+                  initialView="dayGridMonth"
+                  dateClick={handleDateClick}
+                  events={[]}
+                  headerToolbar={{
+                    left: "prev,next today",
+                    center: "title",
+                    right: "dayGridMonth,dayGridWeek,dayGridDay",
+                  }}
+                  buttonText={{
+                    today: "Today",
+                    month: "Month",
+                    week: "Week",
+                    day: "Day",
+                  }}
+                  // className="custom-calendar"
+                  dayCellClassNames={(date) =>
+                    date.dateStr === selectedDate ? "highlighted-date" : ""
+                  }
+                />
+              </div>
             </div>
 
             {/* Meeting Details */}
-            <div className="md:w-1/2 py-4 pl-6 pr-3 overflow-y-auto">
-              <h2 className="text-green-600 text-lg font-bold mb-3">
+            <div className="md:w-full py-4 pl-6 pr-3 overflow-y-auto">
+              <h2 className="text-amber-600 text-lg font-semibold mb-3">
                 {selectedDate ? `Meetings on ${selectedDate}` : "Select a Date"}
               </h2>
               {selectedDate && meetings[selectedDate] ? (
                 meetings[selectedDate].map((meeting, index) => (
                   <div
                     key={index}
-                    className="p-4 bg-gray-100 rounded-md flex justify-between items-center mb-2"
+                    className="meeting-card px-3 py-[6px] flex justify-between items-center mb-3"
                   >
                     <div>
-                      <p className="text-gray-700 font-semibold">
+                      <p className="text-gray-600 font-semibold">
                         {meeting.title}
                       </p>
-                      <p className="text-sm text-gray-500">{meeting.time}</p>
+                      <p className="text-gray-400 text-sm font-medium">
+                        {meeting.time}
+                      </p>
                     </div>
-                    <span className="text-gray-400 text-sm">Virtual</span>
+                    <span className="text-gray-400 font-semibold text-sm">
+                      Virtual
+                    </span>
                   </div>
                 ))
               ) : (
@@ -116,39 +146,39 @@ function DashboardContent() {
 
           {/* Quick Actions */}
           <div className="bg-white p-4 rounded-md shadow-lg max-h-[550px] overflow-y-auto">
-            <h2 className="text-amber-900 text-lg font-bold mb-3">
+            <h2 className="text-amber-700 text-xl font-bold mb-3">
               Quick Actions
             </h2>
             <div className="space-y-3">
               <button
-                onClick={handleNewMeeting}
-                className="w-full flex items-center px-4 py-4 font-semibold bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 transition"
+                onClick={handleOpenNewMeetingModal}
+                className="quick-action-button w-full flex items-center bg-green-500 hover:bg-green-600 transition"
               >
                 <FaPlus className="mr-3" />
                 Schedule New Meeting
               </button>
               <button
                 onClick={handleAllMeetingsClick}
-                className="w-full flex items-center px-4 py-4 font-semibold bg-gray-500 text-white rounded-md shadow-md hover:bg-gray-400 transition"
+                className="quick-action-button w-full flex items-center bg-gray-500 hover:bg-gray-400 transition"
               >
                 <MdOutlineClearAll size={25} className="mr-3" />
                 All Meetings Overview
               </button>
               <button
                 onClick={handleDirectoryClick}
-                className="w-full flex items-center px-4 py-4 font-semibold bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition"
+                className="quick-action-button w-full flex items-center bg-blue-500 hover:bg-blue-600 transition"
               >
                 <FaUserFriends className="mr-3" />
                 Attendees Directory
               </button>
               <button
-                // onClick={handleAddNewAttendee}
-                className="w-full flex items-center px-4 py-4 font-semibold bg-amber-600 text-white rounded-md shadow-md hover:bg-amber-700 transition"
+                onClick={() => setShowAddModal(true)}
+                className="quick-action-button w-full flex items-center px-4 py-4 font-semibold bg-amber-600 text-white rounded-md shadow-md hover:bg-amber-700 transition"
               >
                 <FaPlus className="mr-3" />
                 Add New Attendee to Directory
               </button>
-              <button className="w-full flex items-center px-4 py-4 font-semibold bg-purple-500 text-white rounded-md shadow-md hover:bg-purple-600 transition">
+              <button className="quick-action-button w-full flex items-center bg-purple-500 hover:bg-purple-600 transition">
                 <FaChartPie className="mr-3" />
                 Attendance Reports
               </button>
@@ -156,8 +186,17 @@ function DashboardContent() {
           </div>
         </section>
 
+        {showAddModal && (
+          <AddAttendeeModal
+            onAddAttendee={handleAddAttendee}
+            onClose={() => setShowAddModal(false)}
+          />
+        )}
+
         {/* New Meeting Modal */}
-        {isOpen && <NewMeetingModal onClose={handleCloseModal} />}
+        {isNewMeetingOpen && (
+          <NewMeetingModal onClose={handleCloseNewMeetingModal} />
+        )}
 
         {/* Upcoming Meetings and Notifications */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">

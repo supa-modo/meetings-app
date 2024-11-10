@@ -126,7 +126,7 @@ const AddParticipantModal = ({
               </div>
 
               {/* Signature Pad */}
-              <div className="w-1/2">
+              <div className="w-1/2 border border-gray-400">
                 <SignaturePad
                   ref={(ref) => setSigPad(ref)}
                   canvasProps={{

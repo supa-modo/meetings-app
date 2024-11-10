@@ -1,67 +1,75 @@
 import React, { useState } from "react";
+import { FaTimes } from "react-icons/fa";
+import { v4 as uuidv4 } from "uuid";
 
-const NewMeetingModal = ({ isOpen, setIsOpen }) => {
-  const [formData, setFormData] = useState({
-    title: "",
-    date: "",
-    time: "",
-    location: "",
-    type: "",
-    agenda: "",
-  });
+const NewMeetingModal = ({ onAddMeeting, onClose }) => {
+  const [title, setTitle] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [location, setLocation] = useState("");
+  const [type, setType] = useState("");
+  const [agenda, setAgenda] = useState("");
 
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("New Meeting:", formData);
-    setIsOpen(false);
+  const handleAdd = () => {
+    const newMeeting = {
+      id: uuidv4(),
+      title,
+      date,
+      time,
+      location,
+      type,
+      agenda,
+    };
+    onAddMeeting(newMeeting);
+    onClose();
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-md space-y-4">
-        <h2 className="text-xl font-semibold text-gray-700">
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+      <div className="bg-white rounded-lg p-6 w-[50%] shadow-lg relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-xl text-red-500 hover:text-red-700"
+        >
+          <FaTimes />
+        </button>
+        <h2 className="text-xl font-bold text-gray-700 mb-3">
           Create New Meeting
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <p className="pl-4 mb-4 font-semibold text-gray-600">
+          Enter the meeting details below
+        </p>
+        <div className="md:px-14 font-semibold">
           <input
             type="text"
-            name="title"
             placeholder="Meeting Title"
-            onChange={handleInputChange}
-            required
-            className="w-full p-2 border rounded-md focus:outline-none"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="p-[13px] border border-gray-300 rounded-lg w-full mb-2"
           />
           <input
             type="date"
-            name="date"
-            onChange={handleInputChange}
-            required
-            className="w-full p-2 border rounded-md focus:outline-none"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="p-[13px] border border-gray-300 rounded-lg w-full mb-2"
           />
           <input
             type="time"
-            name="time"
-            onChange={handleInputChange}
-            required
-            className="w-full p-2 border rounded-md focus:outline-none"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            className="p-[13px] border border-gray-300 rounded-lg w-full mb-2"
           />
           <input
             type="text"
-            name="location"
             placeholder="Location"
-            onChange={handleInputChange}
-            required
-            className="w-full p-2 border rounded-md focus:outline-none"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="p-[13px] border border-gray-300 rounded-lg w-full mb-2"
           />
           <select
-            name="type"
-            onChange={handleInputChange}
-            required
-            className="w-full p-2 border rounded-md focus:outline-none"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            className="p-[13px] border border-gray-300 rounded-lg w-full mb-2"
           >
             <option value="">Select Type</option>
             <option value="virtual">Virtual</option>
@@ -69,27 +77,20 @@ const NewMeetingModal = ({ isOpen, setIsOpen }) => {
             <option value="hybrid">Hybrid</option>
           </select>
           <textarea
-            name="agenda"
             placeholder="Meeting Agenda"
-            onChange={handleInputChange}
-            className="w-full p-2 border rounded-md focus:outline-none"
+            value={agenda}
+            onChange={(e) => setAgenda(e.target.value)}
+            className="p-[13px] border border-gray-300 rounded-lg w-full mb-2"
           ></textarea>
-          <div className="flex justify-end space-x-2">
+          <div className="text-center">
             <button
-              type="button"
-              onClick={() => setIsOpen(false)}
-              className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+              onClick={handleAdd}
+              className="bg-blue-500 mt-4 text-white px-4 py-2 rounded-md w-full md:w-1/2"
             >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-            >
-              Save
+              Create Meeting
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

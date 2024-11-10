@@ -171,8 +171,10 @@ const MeetingAttendance = () => {
 
   return (
     <div className="min-h-screen">
-      <Header />
-      <div className="p-8 bg-gray-100 h-screen container mx-auto">
+      <div className="sticky top-0 z-10 bg-white shadow-md">
+        <Header />
+      </div>
+      <div className="p-8 bg-gray-100 min-h-screen container mx-auto">
         <h1 className="text-2xl font-bold mb-4 text-amber-700">
           Meeting Name PlaceHolder Text Example
         </h1>
@@ -200,7 +202,9 @@ const MeetingAttendance = () => {
             </div>
           </div>
           <div>
-            <span className="font-bold text-gray-600">Description</span>
+            <span className="font-bold text-gray-600 underline">
+              Meeting Description
+            </span>
             <p className="line-clamp-3 text-ellipsis">
               Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nobis,
               optio! Dolorem facere tempora mollitia. Voluptatibus dolorem id
@@ -224,8 +228,8 @@ const MeetingAttendance = () => {
 
         {/* Meeting Attendance Section */}
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl w-2/3 font-bold text-amber-700">
-            Meeting Attendance
+          <h2 className="text-2xl w-2/3 font-semibold text-amber-700">
+            Meeting Attendance List
           </h2>
           <div className="w-full items-center flex space-x-8 mb-3">
             {/* <div className=" items-center"> */}
@@ -484,13 +488,13 @@ const MeetingAttendance = () => {
                     <option value="host">Host</option>
                   </select>
                   <p className="font-semibold text-gray-600">
-                    Please draw your signature in the empty box below:
+                    Please draw your signature in the gray <box></box> below:
                   </p>
                   <SignaturePad
                     ref={(ref) => setSigPad(ref)}
                     canvasProps={{
                       className:
-                        "signatureCanvas bg-gray-200 border border-gray-300sm h-40 w-full mb-2",
+                        "signatureCanvas bg-gray-200 border border-gray-300 h-40 w-full mb-2",
                     }}
                   />
                   <div className="">
