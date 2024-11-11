@@ -1,26 +1,20 @@
 import React, { useState, useEffect } from "react";
 import attendeesData from "../data/attendees.json";
 import attendanceList from "../data/attendancelist.json";
-import {
-  FaCalendarAlt,
-  FaMapMarkerAlt,
-  FaPlus,
-  FaSearch,
-  FaTimes,
-} from "react-icons/fa";
+import { FaMapMarkerAlt, FaPlus, FaSearch, FaTimes } from "react-icons/fa";
 import SignaturePad from "react-signature-canvas";
 import Header from "../components/Header";
 import { IoMdPeople } from "react-icons/io";
 import { MdOutlineAccessTime } from "react-icons/md";
 import NotificationModal from "../components/NotificationModal";
-import {
-  IoCalendarClearOutline,
-  IoCalendarNumberOutline,
-  IoCalendarOutline,
-} from "react-icons/io5";
+import { IoCalendarOutline } from "react-icons/io5";
+import AttendanceButton from "../components/AttendanceButtong";
+import AddParticipantModal from "../components/AddParticipantModal";
 
 const MeetingAttendance = () => {
   const [attendees, setAttendees] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isAttendanceStarted, setIsAttendanceStarted] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedResult, setSelectedResult] = useState(null);
   const [formData, setFormData] = useState({
@@ -42,6 +36,16 @@ const MeetingAttendance = () => {
   const [filteredResults, setFilteredResults] = useState([]);
   const [filteredResultsTable, setFilteredResultsTable] = useState([]);
 
+  // function to simulate loading and starting the attendance signing
+  const handleStartAttendance = () => {
+    setIsLoading((prevIsLoading) => {
+      const newLoadingState = !prevIsLoading;
+      setIsAttendanceStarted(newLoadingState); // Sync with isLoading
+      return newLoadingState;
+    });
+  };
+
+  //function to handle searching in the Attendance list table
   const handleSearchChangeTable = (e) => {
     const query = e.target.value;
     setSearchQueryList(query);
@@ -58,13 +62,16 @@ const MeetingAttendance = () => {
     }
   };
 
+  // function to handle searching in the new participant modal
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
 
     if (query) {
-      const results = attendeesData.filter((attendee) =>
-        attendee.name.toLowerCase().includes(query.toLowerCase())
+      const results = attendeesData.filter(
+        (attendee) =>
+          attendee.name.toLowerCase().includes(query.toLowerCase()) ||
+          attendee.email.toLowerCase().includes(query.toLowerCase())
       );
       setFilteredResults(results);
     } else {
@@ -219,11 +226,10 @@ const MeetingAttendance = () => {
             </p>
           </div>
 
-          <div className="">
-            <button className="bg-blue-500 text-white font-semibold px-8 py-2 text-[14px] rounded-sm mt-4 ">
-              Start Marking Attendance
-            </button>
-          </div>
+          <AttendanceButton
+            isLoading={isLoading}
+            onClick={handleStartAttendance}
+          />
         </div>
 
         {/* Meeting Attendance Section */}
@@ -232,14 +238,15 @@ const MeetingAttendance = () => {
             Meeting Attendance List
           </h2>
           <div className="w-full items-center flex space-x-8 mb-3">
-            {/* <div className=" items-center"> */}
             <button
               onClick={() => setShowAddModal(true)}
-              className="bg-green-600 text-white px-10 py-2 text-[15px] font-semibold rounded-sm flex items-center"
+              disabled={!isAttendanceStarted}
+              className={`bg-green-600 text-white px-10 py-2 text-[15px] font-semibold rounded-sm flex items-center ${
+                !isAttendanceStarted ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
               <FaPlus className="mr-2" /> Add New Participant
             </button>
-            {/* </div> */}
             <div className="flex items-center bg-gray-200 border border-gray-300 md:text-base text-sm rounded-md w-2/3 px-4 py-[10px] md:py-2 shadow-sm p-2 ">
               <FaSearch className="text-gray-600 md:mx-4" />
               <input
@@ -354,170 +361,21 @@ const MeetingAttendance = () => {
         </table>
 
         {/* Add New Participant Modal */}
-        {showAddModal && (
-          <div className="fixed inset-0 bg-gray-700 bg-opacity-75 flex items-center justify-center">
-            <div className="bg-white rounded-lg p-6 w-2/3 relative">
-              <button
-                className="absolute text-2xl top-4 right-4 text-red-500 hover:text-red-700"
-                onClick={() => setShowAddModal(false)}
-              >
-                <FaTimes />
-              </button>
-              <h2 className="text-2xl font-bold mb-4 text-amber-700">
-                Sign Your Attendance
-              </h2>
-              <p className="font-semibold mb-4 text-gray-500">
-                Search your name or email in the search field below if you've
-                ever used the system to sign attendance before
-              </p>
-              <div className="flex items-center "></div>
-              <div className="relative mb-6">
-                <div className="flex items-center bg-gray-200 md:text-base text-sm rounded-full px-4 py-[11px] md:py-3 w-full shadow-sm p-2 ">
-                  <FaSearch className="text-gray-600 md:mx-4" />
-                  <input
-                    type="text"
-                    name="search"
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                    placeholder="Search your name or email and select from the list results"
-                    className="bg-transparent focus:outline-none pl-2 w-full text-gray-700 font-semibold"
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={clearSearch}
-                      className="ml-2 text-gray-500"
-                    >
-                      <FaTimes />
-                    </button>
-                  )}
-                </div>
-
-                {/* Search Results Overlay */}
-                {filteredResults.length > 0 ? (
-                  <div className="absolute left-10 right-10 bg-gray-200 border border-gray-300 rounded-sm shadow-lg max-h-56 overflow-y-auto z-10">
-                    {filteredResults.map((result) => (
-                      <div
-                        key={result.id}
-                        onClick={() => handleResultClick(result)}
-                        className="p-2 cursor-pointer hover:bg-gray-100"
-                      >
-                        <span className="font-semibold pl-5">
-                          {result.name}
-                        </span>
-                        <span className="text-gray-500 font-semibold ml-4">
-                          {result.email}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ) : searchQuery && filteredResults.length === 0 ? (
-                  <div className="absolute left-10 right-10 text-center bg-gray-200 border border-gray-300 rounded-sm shadow-lg z-10 p-4 text-gray-600">
-                    Name or email not found in the database
-                  </div>
-                ) : null}
-              </div>
-
-              {selectedResult ? (
-                <p className="font-semibold mb-4">
-                  Confirm your details below from the selection:
-                </p>
-              ) : (
-                <p className="font-semibold mb-4">
-                  If not found, enter your details below:
-                </p>
-              )}
-
-              <div className="flex">
-                {/* Form Fields */}
-                <div className="w-1/2 mr-10 font-semibold">
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Enter your Full Name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full mb-4 pl-5 p-3 border border-gray-300sm "
-                  />
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Your email address"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full mb-4 pl-5 p-3 border border-gray-300sm"
-                  />
-                  <input
-                    type="text"
-                    name="phone"
-                    placeholder="Your Phone number"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full mb-4 pl-5 p-3 border border-gray-300sm"
-                  />
-                  <input
-                    type="text"
-                    name="organization"
-                    placeholder="Organization / Ministry / Company"
-                    value={formData.organization}
-                    onChange={handleChange}
-                    className="w-full mb-4 pl-5 p-3 border border-gray-300sm"
-                  />
-                  <input
-                    type="text"
-                    name="title"
-                    placeholder="Job Title in your Organization / Ministry / Company"
-                    value={formData.title}
-                    onChange={handleChange}
-                    className="w-full mb-4 pl-5 p-3 border border-gray-300sm"
-                  />
-                </div>
-
-                {/* Signature Pad */}
-                <div className="w-1/2">
-                  <select
-                    name="meetingRole"
-                    value={formData.meetingRole}
-                    onChange={handleChange}
-                    className="w-full mb-4 pl-5 font-semibold p-3 border border-gray-300sm"
-                  >
-                    <option value="participant">Participant</option>
-                    <option value="chair">Chair</option>
-                    <option value="rapporteur">Rapporteur</option>
-                    <option value="secretary">Secretary</option>
-                    <option value="speaker">Speaker</option>
-                    <option value="host">Host</option>
-                  </select>
-                  <p className="font-semibold text-gray-600">
-                    Please draw your signature in the gray <box></box> below:
-                  </p>
-                  <SignaturePad
-                    ref={(ref) => setSigPad(ref)}
-                    canvasProps={{
-                      className:
-                        "signatureCanvas bg-gray-200 border border-gray-300 h-40 w-full mb-2",
-                    }}
-                  />
-                  <div className="">
-                    <button
-                      onClick={handleClearSignature}
-                      className="bg-red-500 text-sm font-semibold text-white px-4 py-2 rounded-sm"
-                    >
-                      Clear Signature
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="text-center">
-                <button
-                  onClick={handleAddParticipant}
-                  className="mt-4 bg-blue-500 font-semibold text-white px-8 py-2 rounded-sm"
-                >
-                  Submit Attendance
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <AddParticipantModal
+          showAddModal={showAddModal}
+          setShowAddModal={setShowAddModal}
+          searchQuery={searchQuery}
+          handleSearchChange={handleSearchChange}
+          clearSearch={clearSearch}
+          filteredResults={filteredResults}
+          handleResultClick={handleResultClick}
+          selectedResult={selectedResult}
+          formData={formData}
+          handleChange={handleChange}
+          setSigPad={setSigPad}
+          handleClearSignature={handleClearSignature}
+          handleAddParticipant={handleAddParticipant}
+        />
 
         <NotificationModal
           isOpen={showNotificationModal}

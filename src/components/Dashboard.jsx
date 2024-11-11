@@ -77,11 +77,11 @@ function DashboardContent() {
         </h1>
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {/* Calendar + Meeting Details */}
-          <div className="bg-gray-200 px-6 py-4 rounded-md shadow-lg col-span-2 flex flex-col md:flex-row overflow-hidden max-h-[600px] md:h-[480px]">
+          <div className="bg-gray-200 px-6 py-4 rounded-md shadow-lg col-span-2 flex flex-col md:flex-row overflow-hidden max-h-[600px] md:h-[460px]">
             {/* Calendar */}
             <div className="md:w-[45%] flex-shrink-0">
-              <h2 className="text-amber-700 text-xl font-bold mb-3">
-                Calendar View
+              <h2 className="text-amber-700 text-xl font-bold mb-4">
+                Meetings Calendar
               </h2>
               <div
                 className={`calendar-container ${
@@ -114,7 +114,7 @@ function DashboardContent() {
 
             {/* Meeting Details */}
             <div className="md:w-full py-4 pl-6 pr-3 overflow-y-auto">
-              <h2 className="text-amber-600 text-lg font-semibold mb-3">
+              <h2 className="text-amber-600 text-lg font-semibold mt-5 mb-2">
                 {selectedDate ? `Meetings on ${selectedDate}` : "Select a Date"}
               </h2>
               {selectedDate && meetings[selectedDate] ? (

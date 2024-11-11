@@ -2,7 +2,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
-import MeetingManagement from "./pages/MeetingManagement";
 import MeetingsPage from "./pages/Meetings";
 import AttendeesDirectory from "./pages/AttendeesDirectory";
 import MeetingAttendance from "./pages/MeetingAttendance";

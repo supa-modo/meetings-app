@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import MeetingCard from "../components/MeetingCard";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import { FaSearch, FaTimes } from "react-icons/fa";
+import { FaPlus, FaSearch, FaTimes } from "react-icons/fa";
+import NewMeetingModal from "../components/NewMeetingModal";
 
 const MeetingsPage = () => {
   const meetings = [
@@ -130,6 +131,7 @@ const MeetingsPage = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredResults, setFilteredResults] = useState([]);
+  const [isNewMeetingOpen, setIsNewMeetingOpen] = useState(false);
 
   const handleSearchChange = (e) => {
     const query = e.target.value;
@@ -148,6 +150,24 @@ const MeetingsPage = () => {
   const clearSearch = () => {
     setSearchQuery("");
     setFilteredResults([]);
+  };
+
+  // Function to open the add meeting modal
+  const handleOpenNewMeetingModal = () => {
+    setIsNewMeetingOpen(true);
+  };
+
+  // Function to close the new meeting modal
+  const handleCloseNewMeetingModal = () => {
+    setIsNewMeetingOpen(false);
+  };
+
+  // Function to handle adding a new meeting
+  const handleAddMeeting = (newMeeting) => {
+    console.log("New meeting added:", newMeeting);
+    // Here you can send the new meeting data to your server or state manager
+    // After adding the meeting, close the modal
+    handleCloseNewMeetingModal();
   };
 
   return (
@@ -191,23 +211,36 @@ const MeetingsPage = () => {
         {/* Meetings Table */}
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold text-amber-700 ">All Meetings</h1>
-          <div className="flex items-center bg-gray-200 border border-gray-300 md:text-base text-sm rounded-md w-2/3 px-4 md:py-[7px] shadow-sm ">
-            <FaSearch className="text-gray-600 md:mx-4" />
-            <input
-              type="text"
-              name="search"
-              value={searchQuery}
-              onChange={handleSearchChange}
-              placeholder="Search meeting name or title"
-              className="bg-transparent focus:outline-none pl-2 w-full text-gray-700 font-semibold"
-            />
-            {searchQuery && (
-              <button onClick={clearSearch} className="ml-2 text-gray-500">
-                <FaTimes />
-              </button>
-            )}
+          <div className="flex space-x-8 w-2/3">
+            <button
+              onClick={handleOpenNewMeetingModal}
+              className="bg-blue-500 text-center text-white pl-8 pr-12 py-2 font-semibold rounded-sm hover:bg-blue-600 flex items-center"
+            >
+              <FaPlus className="mr-3" /> Add New Meeting
+            </button>
+            <div className="flex items-center bg-gray-200 border border-gray-300 md:text-base text-sm rounded-md w-2/3 px-4 md:py-[7px] shadow-sm ">
+              <FaSearch className="text-gray-600 md:mx-4" />
+              <input
+                type="text"
+                name="search"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                placeholder="Search meeting name or title"
+                className="bg-transparent focus:outline-none pl-2 w-full text-gray-700 font-semibold"
+              />
+              {searchQuery && (
+                <button onClick={clearSearch} className="ml-2 text-gray-500">
+                  <FaTimes />
+                </button>
+              )}
+            </div>
           </div>
         </div>
+
+        {/* New Meeting Modal */}
+        {isNewMeetingOpen && (
+          <NewMeetingModal onClose={handleCloseNewMeetingModal} />
+        )}
 
         <table className="min-w-full bg-white shadow-md rounded-md overflow-hidden">
           <thead className="bg-gray-500">

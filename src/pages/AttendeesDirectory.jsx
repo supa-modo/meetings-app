@@ -77,7 +77,7 @@ const AttendeesDirectory = () => {
               onClick={() => setShowAddModal(true)}
               className="bg-blue-500 text-center text-white px-4 w-1/3 py-2 font-semibold rounded-md hover:bg-blue-600 flex items-center"
             >
-              <FaPlus className="mr-2" /> Add New Attendee
+              <FaPlus className="mr-4" /> Add New Attendee
             </button>
             <div className="flex items-center bg-gray-200 border border-gray-300 md:text-base text-sm rounded-md px-4 py-[10px] md:py-2 w-2/3">
               <FaSearch className="text-gray-600 md:mx-4" />
