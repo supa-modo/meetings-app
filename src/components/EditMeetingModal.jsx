@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaSave, FaTimes } from "react-icons/fa"; // For Save and Close icons
 
 const EditMeetingModal = ({
@@ -7,17 +7,25 @@ const EditMeetingModal = ({
   meeting,
   saveMeetingDetails,
 }) => {
-  const [formData, setFormData] = useState(
-    meeting
-    // title: meeting?.title || "",
-    // description: meeting?.description || "",
-    // startDate: meeting?.startDate || "",
-    // endDate: meeting?.endDate || "",
-    // startTime: meeting?.startTime || "",
-    // endTime: meeting?.endTime || "",
-    // location: meeting?.location || "",
-    // type: meeting?.type || "",
-  );
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    startDate: "",
+    endDate: "",
+    startTime: "",
+    endTime: "",
+    location: "",
+    type: "",
+  });
+
+  useEffect(() => {
+    if (meeting) {
+      setFormData({
+        ...meeting,
+        description: meeting.description || "",
+      });
+    }
+  }, [meeting]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -36,7 +44,7 @@ const EditMeetingModal = ({
     <>
       {isOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex justify-center items-center z-50 transition duration-300">
-          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full px-14  py-6 relative">
+          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full px-14 py-6 relative">
             <button
               onClick={closeModal}
               className="absolute top-4 right-4 text-xl text-red-500 hover:text-red-700"
@@ -72,7 +80,6 @@ const EditMeetingModal = ({
                   />
                 </div>
                 {/* meeting description */}
-
                 <div>
                   <label
                     htmlFor="description"
@@ -83,10 +90,10 @@ const EditMeetingModal = ({
                   <textarea
                     name="description"
                     id="description"
-                    value={formData.description}
+                    value={formData.description || ""}
                     onChange={handleInputChange}
                     placeholder="Enter meeting Description / Agenda / Links - for virtual and hybrid meetings"
-                    className=" w-full h-28 p-2 mt-1 font-semibold text-gray-500 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+                    className="w-full h-28 p-2 mt-1 font-semibold text-gray-500 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                     required
                   ></textarea>
                 </div>
@@ -127,9 +134,7 @@ const EditMeetingModal = ({
                     />
                   </div>
                 </div>
-
                 {/* Time inputs for the meeting */}
-
                 <div className="flex justify-between space-x-10">
                   <div className="w-full">
                     <label
@@ -166,17 +171,15 @@ const EditMeetingModal = ({
                     />
                   </div>
                 </div>
-
+                {/* Additional fields */}
                 <div className="flex justify-between items-center space-x-10">
-                  {/* location of meeting */}
-                  <div className="w-full ">
+                  <div className="w-full">
                     <label
                       htmlFor="location"
                       className="block text-[15px] font-medium text-gray-600"
                     >
                       Location
                     </label>
-
                     <input
                       id="location"
                       name="location"
@@ -187,8 +190,7 @@ const EditMeetingModal = ({
                       required
                     />
                   </div>
-                  {/* meeting type */}
-                  <div className="w-full ">
+                  <div className="w-full">
                     <label
                       htmlFor="type"
                       className="block text-[15px] font-medium text-gray-600"
@@ -210,7 +212,6 @@ const EditMeetingModal = ({
                   </div>
                 </div>
               </div>
-
               <div className="text-center">
                 <button
                   type="submit"

@@ -9,6 +9,7 @@ import EditMeetingModal from "../components/EditMeetingModal";
 import { formatDate, formatTime } from "../utils/dateTimeFunctions";
 
 import { FaEdit, FaPlus, FaSearch, FaTimes, FaTrash } from "react-icons/fa";
+import NotificationModal from "../components/NotificationModal";
 
 const MeetingsPage = () => {
   const [meetings, setMeetings] = useState([]);
@@ -17,49 +18,87 @@ const MeetingsPage = () => {
   const [selectedMeeting, setSelectedMeeting] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredMeetings, setFilteredMeetings] = useState([]);
+  const navigate = useNavigate();
 
-  // Fetch all meetings from API on component mount
+  const [modalNotificationMessage, setModalNotificationMessage] = useState(""); // For error/success messages
+  const [modalNotificationType, setModalNotificationType] = useState(""); // "success" or "error"
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
+
   useEffect(() => {
-    const fetchMeetings = async () => {
-      try {
-        const response = await axios.get("/meetings/getAllMeetings");
-        setMeetings(response.data);
-      } catch (error) {
-        console.error("Error fetching meetings:", error);
-      }
-    };
     fetchMeetings();
   }, []);
+
+  useEffect(() => {
+    setFilteredMeetings(
+      meetings.filter((meetings) =>
+        meetings.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    );
+  }, [searchQuery, meetings]);
+
+  const sortedMeetings = filteredMeetings.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+
+  const fetchMeetings = async () => {
+    try {
+      const response = await axios.get("/meetings/getAllMeetings");
+      setMeetings(response.data);
+    } catch (error) {
+      console.error("Error fetching attendees:", error);
+      setModalNotificationMessage(
+        "Error fetching meetings, check your internet connection:",
+        error
+      );
+      setShowNotificationModal(true);
+      setModalNotificationType("error");
+    }
+  };
 
   // Add a new meeting
   const handleAddNewMeeting = async (meetingData) => {
     try {
-      const response = await axios.post("/meetings/createmeeting", meetingData);
-      setMeetings((prevMeetings) => [...prevMeetings, response.data]);
+      const response = await axios.post("/meetings/createMeeting", meetingData);
+      console.log("Meeting added:", response.data);
+      await fetchMeetings(); // Update meetings list
       setIsNewMeetingModalOpen(false);
+      setModalNotificationMessage("Meeting has been added successfully");
+      setModalNotificationType("success");
+      setShowNotificationModal(true);
     } catch (error) {
       console.error("Error adding meeting:", error);
+      setModalNotificationMessage(`Error adding meeting: ${error.message}`);
+      setModalNotificationType("error");
+      setShowNotificationModal(true);
     }
   };
 
   // Update a meeting
   const saveMeetingDetails = async (updatedData) => {
     try {
-      await axios.put(
+      const response = await axios.put(
         `/meetings/updateMeeting/${selectedMeeting.id}`,
         updatedData
       );
-      setMeetings((prevMeetings) =>
-        prevMeetings.map((meeting) =>
-          meeting.id === selectedMeeting.id
-            ? { ...meeting, ...updatedData }
-            : meeting
+      setMeetings(
+        meetings.map((meeting) =>
+          meeting.id === selectedMeeting.id ? response.data : meeting
         )
       );
       setIsEditMeetingModalOpen(false);
       setSelectedMeeting(null);
+      setModalNotificationMessage("Meeting has been updated successfully");
+      setShowNotificationModal(true);
+      setModalNotificationType("success");
+      fetchMeetings();
     } catch (error) {
       console.error("Error updating meeting:", error);
+      setModalNotificationMessage(
+        "Error updating meeting details, please try again",
+        error
+      );
+      setShowNotificationModal(true);
+      setModalNotificationType("error");
     }
   };
 
@@ -70,12 +109,17 @@ const MeetingsPage = () => {
       setMeetings((prevMeetings) =>
         prevMeetings.filter((meeting) => meeting.id !== id)
       );
+      setModalNotificationMessage("Meeting has been deleted successfully");
+      setShowNotificationModal(true);
+      setModalNotificationType("success");
+      fetchMeetings();
     } catch (error) {
       console.error("Error deleting meeting:", error);
+      setModalNotificationMessage("Error deleting meeting:", error);
+      setShowNotificationModal(true);
+      setModalNotificationType("error");
     }
   };
-
-  const navigate = useNavigate();
 
   const [scrollPosition, setScrollPosition] = useState(0);
   const scrollContainerRef = useRef(null);
@@ -156,7 +200,7 @@ const MeetingsPage = () => {
             ref={scrollContainerRef}
             className="cards-overflow flex overflow-x-auto space-x-6 sm:space-x-4 md:space-x-6 lg:space-x-8 snap-x snap-mandatory"
           >
-            {meetings.map((meeting) => (
+            {sortedMeetings.map((meeting) => (
               <MeetingCard
                 key={meeting.id}
                 meeting={meeting}
@@ -222,7 +266,7 @@ const MeetingsPage = () => {
             </tr>
           </thead>
           <tbody>
-            {(filteredMeetings.length ? filteredMeetings : meetings).map(
+            {(sortedMeetings.length ? sortedMeetings : meetings).map(
               (meeting, index) => (
                 <tr
                   key={meeting.id}
@@ -253,13 +297,7 @@ const MeetingsPage = () => {
                   </td>
 
                   <td className="pl-2 py-3">{meeting.location}</td>
-                  <td className="pl-2 py-3">
-                    {meeting.location === "virtual"
-                      ? "Virtual"
-                      : meeting.location === "physical"
-                      ? "Physical"
-                      : "Hybrid"}
-                  </td>
+                  <td className="pl-2 py-3">{meeting.type}</td>
                   <td className="pl-2 py-3 font-semibold text-center">
                     {meeting.attended || "--"}
                   </td>
@@ -308,6 +346,15 @@ const MeetingsPage = () => {
             saveMeetingDetails={saveMeetingDetails}
           />
         )}
+
+        <NotificationModal
+          isOpen={showNotificationModal}
+          onClose={() => {
+            setShowNotificationModal(false);
+          }}
+          message={modalNotificationMessage}
+          modalType={modalNotificationType}
+        />
       </div>
     </div>
   );

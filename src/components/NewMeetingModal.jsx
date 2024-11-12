@@ -4,28 +4,37 @@ import { LuCalendarPlus } from "react-icons/lu";
 import { v4 as uuidv4 } from "uuid";
 
 const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    startDate: "",
-    endDate: "",
-    startTime: "",
-    endTime: "",
-    location: "",
-    type: "",
-  });
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [location, setLocation] = useState("");
+  const [type, setType] = useState("");
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     [name]: value,
+  //   }));
+  // };
 
   const handleAdd = (e) => {
     e.preventDefault();
-    const newMeeting = { id: uuidv4(), ...formData };
+    const newMeeting = {
+      id: uuidv4(),
+      title,
+      description,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+      endTime,
+      location,
+      type,
+    };
     onAddMeeting(newMeeting);
     closeModal();
   };
@@ -57,8 +66,8 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                     id="title"
                     name="title"
                     type="text"
-                    value={formData.title}
-                    onChange={handleInputChange}
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                     className="w-full mt-1 px-4 py-3 font-semibold text-gray-500 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                     placeholder="Enter meeting title"
                     required
@@ -75,8 +84,8 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                   <textarea
                     name="description"
                     id="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                     placeholder="Enter meeting description, agenda, or links"
                     className="w-full h-28 p-2 mt-1 font-semibold text-gray-500 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                     required
@@ -95,8 +104,8 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                       id="startDate"
                       name="startDate"
                       type="date"
-                      value={formData.startDate}
-                      onChange={handleInputChange}
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
                       className="w-full mt-1 px-4 py-3 font-semibold text-green-700 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                       required
                     />
@@ -112,8 +121,8 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                       id="endDate"
                       name="endDate"
                       type="date"
-                      value={formData.endDate}
-                      onChange={handleInputChange}
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
                       className="w-full mt-1 px-4 py-3 font-semibold text-red-500 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                       required
                     />
@@ -132,8 +141,8 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                       id="startTime"
                       name="startTime"
                       type="time"
-                      value={formData.startTime}
-                      onChange={handleInputChange}
+                      value={startTime}
+                      onChange={(e) => setStartTime(e.target.value)}
                       className="w-full mt-1 px-4 py-3 font-semibold text-green-700 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                       required
                     />
@@ -149,8 +158,8 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                       id="endTime"
                       name="endTime"
                       type="time"
-                      value={formData.endTime}
-                      onChange={handleInputChange}
+                      value={endTime}
+                      onChange={(e) => setEndTime(e.target.value)}
                       className="w-full mt-1 px-4 py-3 font-semibold text-red-500 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                       required
                     />
@@ -168,8 +177,8 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                     <input
                       id="location"
                       name="location"
-                      value={formData.location}
-                      onChange={handleInputChange}
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
                       placeholder="Enter meeting location"
                       className="w-full mt-1 px-4 py-3 font-semibold text-gray-500 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                       required
@@ -185,8 +194,8 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                     <select
                       id="type"
                       name="type"
-                      value={formData.type}
-                      onChange={handleInputChange}
+                      value={type}
+                      onChange={(e) => setType(e.target.value)}
                       className="w-full mt-1 px-4 py-3 font-semibold text-gray-500 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                       required
                     >
