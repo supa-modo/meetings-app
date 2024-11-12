@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FaSave, FaTimes } from "react-icons/fa";
 
 const EditAttendeeModal = ({ attendee, onSave, onClose }) => {
   const [formData, setFormData] = useState(attendee);
@@ -15,8 +16,14 @@ const EditAttendeeModal = ({ attendee, onSave, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 backdrop-blur-sm">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-xl text-red-500 hover:text-red-700"
+        >
+          <FaTimes />
+        </button>
+        <h2 className="text-2xl font-bold text-gray-500 mb-6">
           Edit Attendee Details
         </h2>
         <form onSubmit={handleSubmit} className="px-14">
@@ -89,19 +96,15 @@ const EditAttendeeModal = ({ attendee, onSave, onClose }) => {
             />
           </div>
 
-          <div className="flex justify-end space-x-4 font-semibold">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-8 py-[10px] text-sm  text-red-500 bg-gray-200 rounded-sm hover:bg-gray-200 transition duration-300"
-            >
-              Cancel
-            </button>
+          <div className="text-center">
             <button
               type="submit"
-              className="px-6 py-[10px] text-sm text-white bg-blue-500 rounded-sm hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 transition duration-300"
+              className="bg-blue-500 font-semibold px-12 mt-4 text-white py-[10px] rounded-md focus:ring-2 focus:ring-blue-500 transition duration-300"
             >
-              Save Changes
+              <div className="flex items-center">
+                <FaSave className="mr-4" />
+                <span> Update Participant Details</span>
+              </div>
             </button>
           </div>
         </form>

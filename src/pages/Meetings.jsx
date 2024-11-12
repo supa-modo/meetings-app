@@ -1,104 +1,82 @@
 import React, { useState, useEffect, useRef } from "react";
+import axios from "../utils/axios";
 import MeetingCard from "../components/MeetingCard";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import { FaPlus, FaSearch, FaTimes } from "react-icons/fa";
-import NewMeetingModal from "../components/NewMeetingModal";
 import NavBar from "../components/Navbar";
+import NewMeetingModal from "../components/NewMeetingModal";
+import EditMeetingModal from "../components/EditMeetingModal";
+import { formatDate, formatTime } from "../utils/dateTimeFunctions";
+
+import { FaEdit, FaPlus, FaSearch, FaTimes, FaTrash } from "react-icons/fa";
 
 const MeetingsPage = () => {
-  const meetings = [
-    {
-      id: 16701020,
-      title: "Pre-Budget Review Committee",
-      date: "2024-11-07",
-      time: "10:00 AM",
-      location: "Virtual",
-      description:
-        "A review meeting to discuss the budget plans for the upcoming fiscal year.",
-      attended: 114,
-    },
-    {
-      id: 13291020,
-      title: "Monetary Union Project Meeting",
-      date: "2024-11-07",
-      time: "2:00 PM",
-      location: "In-Person",
-      description:
-        "Meeting to discuss the progress of the Monetary Union project.",
-    },
-    {
-      id: 31241020,
-      title: "Client Meeting",
-      date: "2024-11-10",
-      time: "1:00 PM",
-      location: "Hybrid",
-      description:
-        "Discuss client requirements and expectations for the new project.",
-    },
-    {
-      id: 24301020,
-      title: "Team Meeting",
-      date: "2024-11-10",
-      time: "3:00 PM",
-      location: "Virtual",
-      description:
-        "Regular team sync-up meeting to discuss project status and deliverables.",
-      attended: 19,
-    },
-    {
-      id: 32101024,
-      title: "Project Planning Meeting",
-      date: "2024-11-14",
-      time: "1:00 PM",
-      location: "In-Person",
-      description:
-        "Initial project planning session for the new development project.",
-      attended: 38,
-    },
-    {
-      id: 22431022,
-      title: "Monetary Union Project Planning Client Example Long Text Meeting",
-      date: "2024-11-07",
-      time: "2:00 PM",
-      location: "In-Person",
-      description:
-        "Meeting to discuss the progress of the Monetary Union project.",
-      attended: 100,
-    },
-    {
-      id: 12211021,
-      title: "Client Meeting",
-      date: "2024-11-10",
-      time: "1:00 PM",
-      location: "Hybrid",
-      description:
-        "Discuss client requirements and expectations ipsum for the new project.",
-      attended: 54,
-    },
-    {
-      id: 22301020,
-      title: "Team Meeting",
-      date: "2024-11-10",
-      time: "3:00 PM",
-      location: "Virtual",
-      description:
-        "Regular team sync-up meeting to discuss lorem project status and deliverables.",
-      attended: 43,
-    },
-    {
-      id: 2431020,
-      title: "Project Planning Meeting",
-      date: "2024-11-14",
-      time: "1:00 PM",
-      location: "In-Person",
-      description:
-        "Initial project planning session for the new lorem ipsum calipr navigate cry takenr terkin ashet french development project.",
-      attended: 18,
-    },
-  ];
+  const [meetings, setMeetings] = useState([]);
+  const [isNewMeetingModalOpen, setIsNewMeetingModalOpen] = useState(false);
+  const [isEditMeetingModalOpen, setIsEditMeetingModalOpen] = useState(false);
+  const [selectedMeeting, setSelectedMeeting] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredMeetings, setFilteredMeetings] = useState([]);
+
+  // Fetch all meetings from API on component mount
+  useEffect(() => {
+    const fetchMeetings = async () => {
+      try {
+        const response = await axios.get("/meetings/getAllMeetings");
+        setMeetings(response.data);
+      } catch (error) {
+        console.error("Error fetching meetings:", error);
+      }
+    };
+    fetchMeetings();
+  }, []);
+
+  // Add a new meeting
+  const handleAddNewMeeting = async (meetingData) => {
+    try {
+      const response = await axios.post("/meetings/createmeeting", meetingData);
+      setMeetings((prevMeetings) => [...prevMeetings, response.data]);
+      setIsNewMeetingModalOpen(false);
+    } catch (error) {
+      console.error("Error adding meeting:", error);
+    }
+  };
+
+  // Update a meeting
+  const saveMeetingDetails = async (updatedData) => {
+    try {
+      await axios.put(
+        `/meetings/updateMeeting/${selectedMeeting.id}`,
+        updatedData
+      );
+      setMeetings((prevMeetings) =>
+        prevMeetings.map((meeting) =>
+          meeting.id === selectedMeeting.id
+            ? { ...meeting, ...updatedData }
+            : meeting
+        )
+      );
+      setIsEditMeetingModalOpen(false);
+      setSelectedMeeting(null);
+    } catch (error) {
+      console.error("Error updating meeting:", error);
+    }
+  };
+
+  // Delete a meeting
+  const handleDeleteMeeting = async (id) => {
+    try {
+      await axios.delete(`/meetings/deleteMeeting/${id}`);
+      setMeetings((prevMeetings) =>
+        prevMeetings.filter((meeting) => meeting.id !== id)
+      );
+    } catch (error) {
+      console.error("Error deleting meeting:", error);
+    }
+  };
 
   const navigate = useNavigate();
+
   const [scrollPosition, setScrollPosition] = useState(0);
   const scrollContainerRef = useRef(null);
 
@@ -130,10 +108,6 @@ const MeetingsPage = () => {
       dotsCount
   );
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredResults, setFilteredResults] = useState([]);
-  const [isNewMeetingOpen, setIsNewMeetingOpen] = useState(false);
-
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
@@ -142,33 +116,28 @@ const MeetingsPage = () => {
       const results = meetings.filter((meeting) =>
         meeting.title.toLowerCase().includes(query.toLowerCase())
       );
-      setFilteredResults(results);
+      setFilteredMeetings(results);
     } else {
-      setFilteredResults([]);
+      setFilteredMeetings([]);
     }
   };
 
   const clearSearch = () => {
     setSearchQuery("");
-    setFilteredResults([]);
+    setFilteredMeetings([]);
   };
 
-  // Function to open the add meeting modal
-  const handleOpenNewMeetingModal = () => {
-    setIsNewMeetingOpen(true);
+  const openNewMeetingModal = () => setIsNewMeetingModalOpen(true);
+  const closeNewMeetingModal = () => setIsNewMeetingModalOpen(false);
+
+  const handleEditMeeting = (meeting) => {
+    setSelectedMeeting(meeting);
+    setIsEditMeetingModalOpen(true);
   };
 
-  // Function to close the new meeting modal
-  const handleCloseNewMeetingModal = () => {
-    setIsNewMeetingOpen(false);
-  };
-
-  // Function to handle adding a new meeting
-  const handleAddMeeting = (newMeeting) => {
-    console.log("New meeting added:", newMeeting);
-    // Here you can send the new meeting data to your server or state manager
-    // After adding the meeting, close the modal
-    handleCloseNewMeetingModal();
+  const closeEditMeetingModal = () => {
+    setIsEditMeetingModalOpen(false);
+    setSelectedMeeting(null);
   };
 
   return (
@@ -181,7 +150,6 @@ const MeetingsPage = () => {
         <h1 className="text-2xl font-bold text-amber-700 mb-4">
           Upcoming Meetings
         </h1>
-
         {/* Display meetings in a single row with horizontal scrolling */}
         <div className="relative mb-6">
           <div
@@ -215,13 +183,13 @@ const MeetingsPage = () => {
           <h1 className="text-2xl font-bold text-amber-700 ">All Meetings</h1>
           <div className="flex space-x-8 w-2/3">
             <button
-              onClick={handleOpenNewMeetingModal}
+              onClick={openNewMeetingModal}
               className="bg-blue-500 text-[15px] text-center text-white pl-8 pr-12 py-2 w-1/4 font-semibold rounded-sm hover:bg-blue-600 flex items-center"
             >
               <FaPlus className="mr-3" /> Add New Meeting
             </button>
-            <div className="flex items-center bg-gray-200 border border-gray-300 md:text-base text-sm rounded-md w-3/4 px-4 md:py-[7px] shadow-sm ">
-              <FaSearch className="text-gray-600 md:mx-4" />
+            <div className="flex items-center bg-gray-200 rounded-md w-3/4 px-4 shadow-sm">
+              <FaSearch className="text-gray-600" />
               <input
                 type="text"
                 name="search"
@@ -239,62 +207,107 @@ const MeetingsPage = () => {
           </div>
         </div>
 
-        {/* New Meeting Modal */}
-        {isNewMeetingOpen && (
-          <NewMeetingModal onClose={handleCloseNewMeetingModal} />
-        )}
-
+        {/* Meetings Table */}
         <table className="min-w-full bg-white shadow-md rounded-md overflow-hidden">
-          <thead className="bg-gray-500">
+          <thead className="bg-gray-500 text-left">
             <tr className="text-white font-medium">
-              <th className="p-4 text-left">Meeting ID</th>
-              <th className="pr-3 py-3 text-left">Meeting Title</th>
-              <th className="pr-3 py-3 text-left">Meeting Date</th>
-              <th className="pr-3 py-3 text-left">Time</th>
-              <th className="pr-3 py-3 text-left">Location</th>
-              <th className="pr-3 py-3 text-left">Type</th>
-              <th className="pr-3">Attended</th>
+              <th className="pl-3">Meeting ID</th>
+              <th className="pl-2 py-3">Meeting Title</th>
+              <th className="pl-2 py-3">Meeting Date</th>
+              <th className="pl-2 py-3">Time</th>
+              <th className="pl-2 py-3">Location</th>
+              <th className="pl-2 py-3">Type</th>
+              <th className="pl-2 text-center">Attended</th>
+              <th className="pl-2 ">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {(filteredResults.length ? filteredResults : meetings).map(
+            {(filteredMeetings.length ? filteredMeetings : meetings).map(
               (meeting, index) => (
                 <tr
                   key={meeting.id}
-                  className={`pl-3 py-3 ${
+                  className={`pl-2 py-3 ${
                     index % 2 === 0 ? "bg-gray-100" : "bg-amber-50"
                   } cursor-pointer hover:bg-gray-300 hover:shadow-md transition duration-200 font-semibold text-gray-600`}
                   onClick={() => navigate(`/meetings/${meeting.id}`)}
                 >
-                  <td className="p-3">{meeting.id}</td>
-                  <td className="pr-2 py-3 text-gray-700 text-ellipsis">
+                  <td className="pl-3">{meeting.id}</td>
+                  <td className="pl-2 py-3 text-gray-700 max-w-[260px] truncate">
                     {meeting.title}
                   </td>
-                  <td className="pr-2 py-3">
-                    <span className="text-green-600">{meeting.date}</span> -{" "}
-                    <span className="text-red-500">{meeting.date}</span>
+                  <td className="pl-2 py-3">
+                    <span className="text-gray-500">
+                      {formatDate(meeting.startDate)} -{" "}
+                    </span>
+                    <span className="text-gray-500">
+                      {formatDate(meeting.endDate)}
+                    </span>
                   </td>
                   <td>
-                    <span className="text-gray-600">{meeting.time}</span> -{" "}
-                    <span className="text-gray-600">{meeting.time}</span>
+                    <span className="text-green-600">
+                      {formatTime(meeting.startTime)} -{" "}
+                    </span>
+                    <span className="text-red-500">
+                      {formatTime(meeting.endTime)}
+                    </span>
                   </td>
 
-                  <td className="pr-2 py-3">{meeting.location}</td>
-                  <td className="pr-2 py-3">
-                    {meeting.location === "Virtual"
+                  <td className="pl-2 py-3">{meeting.location}</td>
+                  <td className="pl-2 py-3">
+                    {meeting.location === "virtual"
                       ? "Virtual"
-                      : meeting.location === "In-Person"
+                      : meeting.location === "physical"
                       ? "Physical"
                       : "Hybrid"}
                   </td>
-                  <td className="pr-2 py-3 font-semibold text-center">
+                  <td className="pl-2 py-3 font-semibold text-center">
                     {meeting.attended || "--"}
+                  </td>
+
+                  <td className="pr-3 py-3 text-center flex items-center max-w-[150px] space-x-3">
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditMeeting(meeting);
+                      }}
+                      className="text-blue-500 flex items-center hover:text-blue-600 cursor-pointer"
+                    >
+                      <FaEdit />
+                      <p className="px-3 font-semibold">Edit</p>
+                    </div>
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteMeeting(meeting.id);
+                      }}
+                      className="text-red-500 hover:text-red-600 flex items-center cursor-pointer"
+                    >
+                      <FaTrash />
+                      <p className="px-3 font-semibold">Delete</p>
+                    </div>
                   </td>
                 </tr>
               )
             )}
           </tbody>
         </table>
+
+        {/* Modals */}
+        {isNewMeetingModalOpen && (
+          <NewMeetingModal
+            isOpen={isNewMeetingModalOpen}
+            closeModal={closeNewMeetingModal}
+            onAddMeeting={handleAddNewMeeting}
+          />
+        )}
+        {isEditMeetingModalOpen && (
+          <EditMeetingModal
+            isOpen={isEditMeetingModalOpen}
+            closeModal={closeEditMeetingModal}
+            meeting={selectedMeeting}
+            saveMeetingDetails={saveMeetingDetails}
+          />
+        )}
       </div>
     </div>
   );
