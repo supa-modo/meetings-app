@@ -5,16 +5,12 @@ import { NavLink } from "react-router-dom";
 
 const NavBar = () => {
   return (
-    <nav
-      className="flex justify-center container text-gray-500 font-semibold  bg-white mx-auto py-1 z-20"
-      style={{ boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}
-    >
+    <nav className="flex justify-center container text-gray-500 font-semibold shadow-md bg-white mx-auto py-1 z-20">
       <ul className="flex space-x-14">
         <li>
           <NavLink
             to="/"
             className=" hover:text-blue-500"
-            activeClassName="text-blue-500 border-b-2 border-blue-500 pb-1"
           >
             Dashboard
           </NavLink>

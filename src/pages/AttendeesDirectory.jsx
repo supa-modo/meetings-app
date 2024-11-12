@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import ViewAttendeeModal from "../components/ViewAttendeeModal";
 import AddAttendeeModal from "../components/AddAttendeeModal";
 import EditAttendeeModal from "../components/EditAttendeeModal";
+import NotificationModal from "../components/NotificationModal"; // Import NotificationModal
 import { FaPlus, FaTrash, FaEdit, FaSearch, FaTimes } from "react-icons/fa";
-import attendeesData from "../data/attendees.json";
+import axios from "../utils/axios"; // Import Axios instance
 import Header from "../components/Header";
 import NavBar from "../components/Navbar";
 
@@ -16,9 +17,12 @@ const AttendeesDirectory = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const [modalNotificationMessage, setModalNotificationMessage] = useState(""); // For error/success messages
+  const [modalNotificationType, setModalNotificationType] = useState(""); // "success" or "error"
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
+
   useEffect(() => {
-    setAttendees(attendeesData);
-    setFilteredAttendees(attendeesData);
+    fetchAttendees();
   }, []);
 
   useEffect(() => {
@@ -29,27 +33,94 @@ const AttendeesDirectory = () => {
     );
   }, [searchTerm, attendees]);
 
+  const sortedAttendees = filteredAttendees.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+
+  const fetchAttendees = async () => {
+    try {
+      const response = await axios.get("/attendees/getAllAttendees");
+      setAttendees(response.data);
+    } catch (error) {
+      console.error("Error fetching attendees:", error);
+      setModalNotificationMessage(
+        "Error fetching attendees, check your internet connection:",
+        error
+      );
+      setShowNotificationModal(true);
+      setModalNotificationType("error");
+    }
+  };
+
   const handleViewAttendee = (attendee) => {
     setSelectedAttendee(attendee);
     setShowViewModal(true);
   };
 
-  const handleDeleteAttendee = (id) => {
-    setAttendees(attendees.filter((attendee) => attendee.id !== id));
+  const handleDeleteAttendee = async (id) => {
+    try {
+      await axios.delete(`/attendees/deleteAttendee/${id}`);
+      setAttendees(attendees.filter((attendee) => attendee.id !== id));
+      setModalNotificationMessage("Participant has been deleted successfully");
+      setShowNotificationModal(true);
+      setModalNotificationType("success");
+      fetchAttendees();
+    } catch (error) {
+      console.error("An error occurred", error);
+      setModalNotificationMessage("Error deleting participant:", error);
+      setShowNotificationModal(true);
+      setModalNotificationType("error");
+    }
   };
 
-  const handleAddAttendee = (newAttendee) => {
-    setAttendees([...attendees, newAttendee]);
-    setShowAddModal(false);
+  const handleAddAttendee = async (newAttendee) => {
+    try {
+      const response = await axios.post(
+        "/attendees/createAttendee",
+        newAttendee
+      );
+      setAttendees([...attendees, response.data]);
+      setShowAddModal(false);
+      setModalNotificationMessage("Participant has been added successfully");
+      setShowNotificationModal(true);
+      setModalNotificationType("success");
+      fetchAttendees();
+    } catch (error) {
+      console.error("Error adding participant:", error);
+      setModalNotificationMessage(
+        "Error adding participant, please try again",
+        error
+      );
+      setShowNotificationModal(true);
+      setModalNotificationType("error");
+    }
   };
 
-  const handleEditAttendee = (updatedAttendee) => {
-    setAttendees(
-      attendees.map((attendee) =>
-        attendee.id === updatedAttendee.id ? updatedAttendee : attendee
-      )
-    );
-    setShowEditModal(false);
+  const handleEditAttendee = async (updatedAttendee) => {
+    try {
+      const response = await axios.put(
+        `/attendees/updateAttendee/${updatedAttendee.id}`,
+        updatedAttendee
+      );
+      setAttendees(
+        attendees.map((attendee) =>
+          attendee.id === updatedAttendee.id ? response.data : attendee
+        )
+      );
+      setShowEditModal(false);
+      setModalNotificationMessage("Participant has been updated successfully");
+      setShowNotificationModal(true);
+      setModalNotificationType("success");
+      fetchAttendees();
+    } catch (error) {
+      console.error("Error updating participant:", error);
+      setModalNotificationMessage(
+        "Error updating participant details, please try again",
+        error
+      );
+      setShowNotificationModal(true);
+      setModalNotificationType("error");
+    }
   };
 
   const handleOpenEditModal = (attendee, e) => {
@@ -72,7 +143,7 @@ const AttendeesDirectory = () => {
       <div className="md:container mx-auto px-4 p-8">
         <div className="flex flex-col md:flex-row md:justify-between items-center mb-4">
           <h1 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">
-            Attendees Directory
+            Participants Directory
           </h1>
           <div className="flex flex-col md:flex-row items-center space-x-3 w-full md:w-1/2">
             <button
@@ -112,7 +183,7 @@ const AttendeesDirectory = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredAttendees.map((attendee, index) => (
+            {sortedAttendees.map((attendee, index) => (
               <tr
                 key={attendee.id}
                 className={`${
@@ -124,8 +195,10 @@ const AttendeesDirectory = () => {
                 <td className="p-3 text-gray-700">{attendee.name}</td>
                 <td className="p-3">{attendee.email}</td>
                 <td className="p-3">{attendee.phone}</td>
-                <td className="p-3">{attendee.organization}</td>
-                <td className="p-3">{attendee.title}</td>
+                <td className="p-3 max-w-[200px] truncate">
+                  {attendee.organization}
+                </td>
+                <td className="p-3 max-w-[200px] truncate">{attendee.title}</td>
                 <td className="p-3 text-center flex items-center space-x-3">
                   <div
                     onClick={(e) => handleOpenEditModal(attendee, e)}
@@ -149,27 +222,35 @@ const AttendeesDirectory = () => {
             ))}
           </tbody>
         </table>
-
-        {showViewModal && (
-          <ViewAttendeeModal
-            attendee={selectedAttendee}
-            onClose={() => setShowViewModal(false)}
-          />
-        )}
-        {showAddModal && (
-          <AddAttendeeModal
-            onAddAttendee={handleAddAttendee}
-            onClose={() => setShowAddModal(false)}
-          />
-        )}
-        {showEditModal && (
-          <EditAttendeeModal
-            attendee={selectedAttendee}
-            onSave={handleEditAttendee}
-            onClose={() => setShowEditModal(false)}
-          />
-        )}
       </div>
+      {showViewModal && (
+        <ViewAttendeeModal
+          attendee={selectedAttendee}
+          onClose={() => setShowViewModal(false)}
+        />
+      )}
+      {showAddModal && (
+        <AddAttendeeModal
+          onAddAttendee={handleAddAttendee}
+          onClose={() => setShowAddModal(false)}
+        />
+      )}
+      {showEditModal && (
+        <EditAttendeeModal
+          attendee={selectedAttendee}
+          onSave={handleEditAttendee}
+          onClose={() => setShowEditModal(false)}
+        />
+      )}
+
+      <NotificationModal
+        isOpen={showNotificationModal}
+        onClose={() => {
+          setShowNotificationModal(false);
+        }}
+        message={modalNotificationMessage}
+        modalType={modalNotificationType}
+      />
     </div>
   );
 };
