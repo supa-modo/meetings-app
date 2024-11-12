@@ -10,6 +10,7 @@ import NotificationModal from "../components/NotificationModal";
 import { IoCalendarOutline } from "react-icons/io5";
 import AttendanceButton from "../components/AttendanceButtong";
 import AddParticipantModal from "../components/AddParticipantModal";
+import NavBar from "../components/Navbar";
 
 const MeetingAttendance = () => {
   const [attendees, setAttendees] = useState([]);
@@ -178,8 +179,9 @@ const MeetingAttendance = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="sticky top-0 z-10 bg-white shadow-md">
+      <div className="sticky top-0 z-10 ">
         <Header />
+        <NavBar />
       </div>
       <div className="p-8 bg-gray-100 min-h-screen container mx-auto">
         <h1 className="text-2xl font-bold mb-4 text-amber-700">
@@ -254,7 +256,7 @@ const MeetingAttendance = () => {
                 name="search"
                 value={searchQueryList}
                 onChange={handleSearchChangeTable}
-                placeholder="Search your name or email"
+                placeholder="Search your name or email from the attendance list"
                 className="bg-transparent focus:outline-none pl-2 w-full text-gray-700 font-semibold"
               />
               {searchQuery && (

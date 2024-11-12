@@ -5,6 +5,7 @@ import EditAttendeeModal from "../components/EditAttendeeModal";
 import { FaPlus, FaTrash, FaEdit, FaSearch, FaTimes } from "react-icons/fa";
 import attendeesData from "../data/attendees.json";
 import Header from "../components/Header";
+import NavBar from "../components/Navbar";
 
 const AttendeesDirectory = () => {
   const [attendees, setAttendees] = useState([]);
@@ -64,8 +65,9 @@ const AttendeesDirectory = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="sticky top-0 z-10 bg-white shadow-md">
+      <div className="sticky top-0 z-10">
         <Header />
+        <NavBar />
       </div>
       <div className="md:container mx-auto px-4 p-8">
         <div className="flex flex-col md:flex-row md:justify-between items-center mb-4">

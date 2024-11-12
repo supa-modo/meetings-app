@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import MeetingsPage from "./pages/Meetings";
 import AttendeesDirectory from "./pages/AttendeesDirectory";
 import MeetingAttendance from "./pages/MeetingAttendance";
+import ReportsScreen from "./pages/Reports";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/directory" element={<AttendeesDirectory />} />
         {/* Route for a specific Meeting Management */}
         <Route path="/meetings2/" element={<MeetingAttendance />} />
+        <Route path="/reports/" element={<ReportsScreen />} />
       </Routes>
     </Router>
   );

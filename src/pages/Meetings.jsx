@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { FaPlus, FaSearch, FaTimes } from "react-icons/fa";
 import NewMeetingModal from "../components/NewMeetingModal";
+import NavBar from "../components/Navbar";
 
 const MeetingsPage = () => {
   const meetings = [
@@ -172,10 +173,11 @@ const MeetingsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-200">
-      <div className="sticky top-0 z-10 bg-white shadow-md">
+      <div className="sticky top-0 z-10 ">
         <Header />
+        <NavBar />
       </div>
-      <div className="md:container mx-auto px-10 py-6 min-h-screen bg-gray-100">
+      <div className="md:container mx-auto px-10 py-4 min-h-screen bg-gray-100">
         <h1 className="text-2xl font-bold text-amber-700 mb-4">
           Upcoming Meetings
         </h1>
@@ -214,11 +216,11 @@ const MeetingsPage = () => {
           <div className="flex space-x-8 w-2/3">
             <button
               onClick={handleOpenNewMeetingModal}
-              className="bg-blue-500 text-center text-white pl-8 pr-12 py-2 font-semibold rounded-sm hover:bg-blue-600 flex items-center"
+              className="bg-blue-500 text-[15px] text-center text-white pl-8 pr-12 py-2 w-1/4 font-semibold rounded-sm hover:bg-blue-600 flex items-center"
             >
               <FaPlus className="mr-3" /> Add New Meeting
             </button>
-            <div className="flex items-center bg-gray-200 border border-gray-300 md:text-base text-sm rounded-md w-2/3 px-4 md:py-[7px] shadow-sm ">
+            <div className="flex items-center bg-gray-200 border border-gray-300 md:text-base text-sm rounded-md w-3/4 px-4 md:py-[7px] shadow-sm ">
               <FaSearch className="text-gray-600 md:mx-4" />
               <input
                 type="text"

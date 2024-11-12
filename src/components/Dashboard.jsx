@@ -47,6 +47,9 @@ function DashboardContent() {
   const handleDirectoryClick = () => {
     navigate("/directory");
   };
+  const handleReportsClick = () => {
+    navigate("/reports");
+  };
 
   const handleDateClick = (arg) => {
     setSelectedDate(arg.dateStr);
@@ -178,9 +181,12 @@ function DashboardContent() {
                 <FaPlus className="mr-3" />
                 Add New Attendee to Directory
               </button>
-              <button className="quick-action-button w-full flex items-center bg-purple-500 hover:bg-purple-600 transition">
+              <button
+                onClick={handleReportsClick}
+                className="quick-action-button w-full flex items-center bg-purple-500 hover:bg-purple-600 transition"
+              >
                 <FaChartPie className="mr-3" />
-                Attendance Reports
+                Meeting Reports
               </button>
             </div>
           </div>

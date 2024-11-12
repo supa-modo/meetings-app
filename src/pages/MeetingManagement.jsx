@@ -1,52 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom"; // Import useParams
 import Header from "../components/Header";
-
-// Example meeting data (replace this with a fetch from an API or context)
-const meetingsData = [
-  {
-    id: 1,
-    title: "Pre-Budget Review Committee",
-    date: "2024-11-07",
-    time: "10:00 AM",
-    location: "Virtual",
-    description:
-      "A review meeting to discuss the budget plans for the upcoming fiscal year.",
-    attendees: ["John Doe", "Jane Smith"],
-  },
-  // Add other meetings here...
-];
-
-const exampleAttendees = [
-  {
-    name: "Alice Johnson",
-    signature: "https://example.com/signatures/alice.png", // Replace with an actual image URL
-  },
-  {
-    name: "Bob Smith",
-    signature: "https://example.com/signatures/bob.png", // Replace with an actual image URL
-  },
-  {
-    name: "Carlos Rivera",
-    signature: "https://example.com/signatures/carlos.png", // Replace with an actual image URL
-  },
-  {
-    name: "Diana Chen",
-    signature: "https://example.com/signatures/diana.png", // Replace with an actual image URL
-  },
-];
+import NavBar from "../components/Navbar";
 
 const MeetingManagement = () => {
   const { meetingId } = useParams(); // Get meetingId from URL params
   const [meeting, setMeeting] = useState(null);
   const [isMeetingStarted, setIsMeetingStarted] = useState(false);
   const [showModal, setShowModal] = useState(false);
-
-  // Find the meeting based on the meetingId
-  useEffect(() => {
-    const foundMeeting = meetingsData.find((m) => m.id === parseInt(meetingId));
-    setMeeting(foundMeeting);
-  }, [meetingId]);
 
   // Ensure the meeting exists before rendering
   if (!meeting) {
@@ -63,8 +24,9 @@ const MeetingManagement = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="sticky top-0 z-10 bg-white shadow-md">
+      <div className="sticky top-0 z-10 ">
         <Header />
+        <NavBar />
       </div>
       <div className="bg-gray-50 md:container mx-auto p-8">
         <h1 className="text-3xl font-semibold text-gray-800 mb-6">
