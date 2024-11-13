@@ -27,9 +27,9 @@ const MeetingCard = ({ meeting, onClick }) => {
             {formatTime(meeting.startTime)} to {formatTime(meeting.endTime)}
           </span>
         </div>
-        <div className="flex w-full items-center text-gray-500 text-sm font-semibold">
+        <div className="flex w-full items-center text-gray-500 text-sm font-semibold ">
           <MdLocationPin size={19} className="mr-2 text-red-600" />
-          <span>{meeting.location}</span>
+          <span className="line-clamp-1">{meeting.location}</span>
         </div>
       </div>
 

@@ -12,7 +12,7 @@ import {
 import "../assets/DashboardContent.css";
 import { MdOutlineClearAll } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import NewMeetingModal from "./NewMeetingModal";
+import NewMeetingModal from "./AddMeetingModal";
 import meetingsData from "../data/meetings.json";
 import AddAttendeeModal from "./AddAttendeeModal";
 

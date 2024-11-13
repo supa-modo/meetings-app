@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import { FaTimes, FaSave } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
 import { LuCalendarPlus } from "react-icons/lu";
-import { v4 as uuidv4 } from "uuid";
+import axios from "../utils/axios";
+import { formatTime2 } from "../utils/dateTimeFunctions";
+import moment from "moment";
+import NotificationModal from "./NotificationModal";
 
-const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
+const NewMeetingModal = ({ isOpen, closeModal }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -11,34 +14,111 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [location, setLocation] = useState("");
-  const [type, setType] = useState("");
+  const [type, setType] = useState("physical"); // default to "physical"
+  const [loading, setLoading] = useState(false);
 
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     [name]: value,
-  //   }));
-  // };
+  // Notification state
+  const [modalNotificationMessage, setModalNotificationMessage] = useState("");
+  const [modalNotificationType, setModalNotificationType] = useState("");
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
 
-  const handleAdd = (e) => {
+  const validateForm = () => {
+    if (
+      !title ||
+      !startDate ||
+      !endDate ||
+      !startTime ||
+      !endTime ||
+      !location ||
+      !type
+    ) {
+      setModalNotificationMessage("All fields are required.");
+      setModalNotificationType("error");
+      return false;
+    }
+
+    if (moment(startDate).isAfter(moment(endDate))) {
+      setModalNotificationMessage("Start date must be before end date.");
+      setModalNotificationType("error");
+      return false;
+    }
+
+    if (moment(startTime, "HH:mm").isAfter(moment(endTime, "HH:mm"))) {
+      setModalNotificationMessage("Start time must be before end time.");
+      setModalNotificationType("error");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleAdd = async (e) => {
     e.preventDefault();
-    const newMeeting = {
-      id: uuidv4(),
+
+    if (!validateForm()) {
+      setShowNotificationModal(true);
+      return;
+    }
+
+    setLoading(true);
+    const meetingData = {
       title,
       description,
       startDate,
       endDate,
       startTime,
       endTime,
-      endTime,
       location,
       type,
     };
-    onAddMeeting(newMeeting);
-    closeModal();
+
+    try {
+      await axios.post("/meetings/createMeeting", meetingData);
+      setModalNotificationMessage("New Meeting has been added successfully");
+      setModalNotificationType("success");
+      closeModal();
+    } catch (error) {
+      setModalNotificationMessage("Error adding meeting. Please try again.");
+      setModalNotificationType("error");
+    } finally {
+      setShowNotificationModal(true);
+      setLoading(false);
+    }
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    switch (name) {
+      case "title":
+        setTitle(value);
+        break;
+      case "description":
+        setDescription(value);
+        break;
+      case "startDate":
+        setStartDate(value);
+        break;
+      case "endDate":
+        setEndDate(value);
+        break;
+      case "location":
+        setLocation(value);
+        break;
+      case "type":
+        setType(value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleInputChangeTime = (e) => {
+    const { name, value } = e.target;
+    const formattedTime = new Date(`1970-01-01T${value}:00`).toISOString();
+    name === "startTime"
+      ? setStartTime(formattedTime)
+      : setEndTime(formattedTime);
+  };
   return (
     <>
       {isOpen && (
@@ -67,7 +147,7 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                     name="title"
                     type="text"
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={handleInputChange}
                     className="w-full mt-1 px-4 py-3 font-semibold text-gray-500 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                     placeholder="Enter meeting title"
                     required
@@ -85,7 +165,7 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                     name="description"
                     id="description"
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onChange={handleInputChange}
                     placeholder="Enter meeting Description / Agenda / Links - for virtual and hybrid meetings"
                     className="w-full h-28 p-2 mt-1 font-semibold text-gray-500 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                     required
@@ -105,7 +185,7 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                       name="startDate"
                       type="date"
                       value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
+                      onChange={handleInputChange}
                       className="w-full mt-1 px-4 py-3 font-semibold text-green-700 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                       required
                     />
@@ -122,7 +202,7 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                       name="endDate"
                       type="date"
                       value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
+                      onChange={handleInputChange}
                       className="w-full mt-1 px-4 py-3 font-semibold text-red-500 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                       required
                     />
@@ -141,8 +221,8 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                       id="startTime"
                       name="startTime"
                       type="time"
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
+                      value={startTime ? formatTime2(startTime, "HH:mm") : ""}
+                      onChange={handleInputChangeTime}
                       className="w-full mt-1 px-4 py-3 font-semibold text-green-700 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                       required
                     />
@@ -158,8 +238,8 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                       id="endTime"
                       name="endTime"
                       type="time"
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
+                      value={endTime ? formatTime2(endTime, "HH:mm") : ""}
+                      onChange={handleInputChangeTime}
                       className="w-full mt-1 px-4 py-3 font-semibold text-red-500 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                       required
                     />
@@ -178,7 +258,7 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                       id="location"
                       name="location"
                       value={location}
-                      onChange={(e) => setLocation(e.target.value)}
+                      onChange={handleInputChange}
                       placeholder="Enter meeting location"
                       className="w-full mt-1 px-4 py-3 font-semibold text-gray-500 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                       required
@@ -195,13 +275,13 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                       id="type"
                       name="type"
                       value={type}
-                      onChange={(e) => setType(e.target.value)}
+                      onChange={handleInputChange}
                       className="w-full mt-1 px-4 py-3 font-semibold text-gray-500 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                       required
                     >
-                      <option value="physical">Physical</option>
-                      <option value="virtual">Virtual</option>
-                      <option value="hybrid">Hybrid</option>
+                      <option value="physical">Physical Meeting</option>
+                      <option value="virtual">Virtual Meeting</option>
+                      <option value="hybrid">Hybrid Meeting</option>
                     </select>
                   </div>
                 </div>
@@ -222,6 +302,16 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
           </div>
         </div>
       )}
+
+      {/* Notification Modal */}
+      <NotificationModal
+        isOpen={showNotificationModal}
+        onClose={() => {
+          setShowNotificationModal(false);
+        }}
+        message={modalNotificationMessage}
+        modalType={modalNotificationType}
+      />
     </>
   );
 };

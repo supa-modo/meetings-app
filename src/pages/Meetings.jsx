@@ -4,7 +4,7 @@ import MeetingCard from "../components/MeetingCard";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import NavBar from "../components/Navbar";
-import NewMeetingModal from "../components/NewMeetingModal";
+import NewMeetingModal from "../components/AddMeetingModal";
 import EditMeetingModal from "../components/EditMeetingModal";
 import { formatDate, formatTime } from "../utils/dateTimeFunctions";
 
@@ -45,31 +45,14 @@ const MeetingsPage = () => {
       const response = await axios.get("/meetings/getAllMeetings");
       setMeetings(response.data);
     } catch (error) {
-      console.error("Error fetching attendees:", error);
+      console.error(
+        "Error fetching attendees, Please check your internet connection"
+      );
       setModalNotificationMessage(
-        "Error fetching meetings, check your internet connection:",
-        error
+        "Error fetching meetings, check your internet connection:"
       );
       setShowNotificationModal(true);
       setModalNotificationType("error");
-    }
-  };
-
-  // Add a new meeting
-  const handleAddNewMeeting = async (meetingData) => {
-    try {
-      const response = await axios.post("/meetings/createMeeting", meetingData);
-      console.log("Meeting added:", response.data);
-      await fetchMeetings(); // Update meetings list
-      setIsNewMeetingModalOpen(false);
-      setModalNotificationMessage("Meeting has been added successfully");
-      setModalNotificationType("success");
-      setShowNotificationModal(true);
-    } catch (error) {
-      console.error("Error adding meeting:", error);
-      setModalNotificationMessage(`Error adding meeting: ${error.message}`);
-      setModalNotificationType("error");
-      setShowNotificationModal(true);
     }
   };
 
@@ -90,12 +73,11 @@ const MeetingsPage = () => {
       setModalNotificationMessage("Meeting has been updated successfully");
       setShowNotificationModal(true);
       setModalNotificationType("success");
-      fetchMeetings();
+      await fetchMeetings();
     } catch (error) {
       console.error("Error updating meeting:", error);
       setModalNotificationMessage(
-        "Error updating meeting details, please try again",
-        error
+        "Error updating meeting details, Please check your internet connection and try again"
       );
       setShowNotificationModal(true);
       setModalNotificationType("error");
@@ -112,10 +94,12 @@ const MeetingsPage = () => {
       setModalNotificationMessage("Meeting has been deleted successfully");
       setShowNotificationModal(true);
       setModalNotificationType("success");
-      fetchMeetings();
+      await fetchMeetings();
     } catch (error) {
       console.error("Error deleting meeting:", error);
-      setModalNotificationMessage("Error deleting meeting:", error);
+      setModalNotificationMessage(
+        "Error deleting meeting, Please check your internet connection and try again"
+      );
       setShowNotificationModal(true);
       setModalNotificationType("error");
     }
@@ -296,7 +280,9 @@ const MeetingsPage = () => {
                     </span>
                   </td>
 
-                  <td className="pl-2 py-3">{meeting.location}</td>
+                  <td className="pl-2 py-3 max-w-[160px] truncate">
+                    {meeting.location}
+                  </td>
                   <td className="pl-2 py-3">{meeting.type}</td>
                   <td className="pl-2 py-3 font-semibold text-center">
                     {meeting.attended || "--"}
@@ -335,7 +321,6 @@ const MeetingsPage = () => {
           <NewMeetingModal
             isOpen={isNewMeetingModalOpen}
             closeModal={closeNewMeetingModal}
-            onAddMeeting={handleAddNewMeeting}
           />
         )}
         {isEditMeetingModalOpen && (

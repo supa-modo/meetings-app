@@ -23,7 +23,6 @@ const EditMeetingModal = ({
     if (meeting) {
       setFormData({
         ...meeting,
-        description: meeting.description || "",
       });
     }
   }, [meeting]);
@@ -101,7 +100,7 @@ const EditMeetingModal = ({
                   <textarea
                     name="description"
                     id="description"
-                    value={formData.description || ""}
+                    value={formData.description}
                     onChange={handleInputChange}
                     placeholder="Enter meeting Description / Agenda / Links - for virtual and hybrid meetings"
                     className="w-full h-28 p-2 mt-1 font-semibold text-gray-500 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
