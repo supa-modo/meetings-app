@@ -28,7 +28,7 @@ const MeetingCard = ({ meeting, onClick }) => {
           </span>
         </div>
         <div className="flex w-full items-center text-gray-500 text-sm font-semibold ">
-          <MdLocationPin size={19} className="mr-2 text-red-600" />
+          <MdLocationPin size={20} className="mr-2 text-red-600" />
           <span className="line-clamp-1">{meeting.location}</span>
         </div>
       </div>

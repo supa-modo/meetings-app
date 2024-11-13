@@ -7,7 +7,6 @@ import NavBar from "../components/Navbar";
 import NewMeetingModal from "../components/AddMeetingModal";
 import EditMeetingModal from "../components/EditMeetingModal";
 import { formatDate, formatTime } from "../utils/dateTimeFunctions";
-
 import { FaEdit, FaPlus, FaSearch, FaTimes, FaTrash } from "react-icons/fa";
 import NotificationModal from "../components/NotificationModal";
 
@@ -188,7 +187,7 @@ const MeetingsPage = () => {
               <MeetingCard
                 key={meeting.id}
                 meeting={meeting}
-                onClick={() => navigate("/meetings2")}
+                onClick={() => navigate(`/meetings/${meeting.id}`)}
               />
             ))}
           </div>

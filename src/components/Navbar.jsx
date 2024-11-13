@@ -16,7 +16,7 @@ const NavBar = () => {
           <NavLink
             to="/meetings"
             className="hover:text-blue-500 "
-            activeClassName="text-blue-500 border-b-2 border-blue-500 pb-1"
+            activeclassName="text-blue-500 border-b-2 border-blue-500 pb-1"
           >
             Meetings
           </NavLink>
@@ -25,7 +25,7 @@ const NavBar = () => {
           <NavLink
             to="/directory"
             className="hover:text-blue-500 "
-            activeClassName="text-blue-500 border-b-2 border-blue-500 pb-1"
+            activeclassName="text-blue-500 border-b-2 border-blue-500 pb-1"
           >
             Participants' Directory
           </NavLink>
@@ -34,7 +34,7 @@ const NavBar = () => {
           <NavLink
             to="/reports"
             className="hover:text-blue-500 "
-            activeClassName="text-blue-500 border-b-2 border-blue-500 pb-1"
+            activeclassName="text-blue-500 border-b-2 border-blue-500 pb-1"
           >
             Reports
           </NavLink>

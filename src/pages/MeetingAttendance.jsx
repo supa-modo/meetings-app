@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import attendeesData from "../data/attendees.json";
 import attendanceList from "../data/attendancelist.json";
 import { FaMapMarkerAlt, FaPlus, FaSearch, FaTimes } from "react-icons/fa";
 import SignaturePad from "react-signature-canvas";
@@ -11,31 +10,66 @@ import { IoCalendarOutline } from "react-icons/io5";
 import AttendanceButton from "../components/AttendanceButtong";
 import AddParticipantModal from "../components/AddParticipantModal";
 import NavBar from "../components/Navbar";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "../utils/axios";
+import { formatDate, formatTime } from "../utils/dateTimeFunctions";
 
 const MeetingAttendance = () => {
+  const { meetingID } = useParams(); // Extract the meeting ID from the URL parameters
+  const navigate = useNavigate();
+  const [meetingDetails, setMeetingDetails] = useState(null);
   const [attendees, setAttendees] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isAttendanceStarted, setIsAttendanceStarted] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedResult, setSelectedResult] = useState(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    organization: "",
-    title: "",
-    meetingRole: "participant",
-    signature: "",
-  });
 
   const [modalNotificationMessage, setModalNotificationMessage] = useState(""); // For error/success messages
   const [modalNotificationType, setModalNotificationType] = useState(""); // "success" or "error"
   const [showNotificationModal, setShowNotificationModal] = useState(false);
 
-  const [searchQuery, setSearchQuery] = useState("");
   const [searchQueryList, setSearchQueryList] = useState("");
-  const [filteredResults, setFilteredResults] = useState([]);
   const [filteredResultsTable, setFilteredResultsTable] = useState([]);
+
+  useEffect(() => {
+    const fetchMeetingDetails = async () => {
+      try {
+        const response = await axios.get(`/meetings/getMeeting/${meetingID}`);
+        setMeetingDetails(response.data); // Set the meeting details into state
+      } catch (error) {
+        console.error("Error fetching meeting details:", error);
+        setModalNotificationMessage(
+          "Error fetching meeting details. Please check your internet connection."
+        );
+        setModalNotificationType("error");
+        setShowNotificationModal(true);
+      }
+    };
+
+    fetchMeetingDetails();
+  }, [meetingID]); // Re-fetch when the meeting ID changes
+
+  // Set attendees list
+  useEffect(() => {
+    setAttendees(attendanceList);
+  }, []);
+
+  // Filter attendance list based on search query
+  useEffect(() => {
+    if (searchQueryList.trim() === "") {
+      setFilteredResultsTable([]); // If no search query, reset the filtered results
+    } else {
+      const results = attendees.filter(
+        (attendee) =>
+          attendee.name.toLowerCase().includes(searchQueryList.toLowerCase()) ||
+          attendee.email.toLowerCase().includes(searchQueryList.toLowerCase())
+      );
+      setFilteredResultsTable(results);
+    }
+  }, [searchQueryList, attendees]);
+
+  if (!meetingDetails) {
+    return <div>Loading meeting details...</div>; // Show loading message while fetching the meeting details
+  }
 
   // function to simulate loading and starting the attendance signing
   const handleStartAttendance = () => {
@@ -48,133 +82,11 @@ const MeetingAttendance = () => {
 
   //function to handle searching in the Attendance list table
   const handleSearchChangeTable = (e) => {
-    const query = e.target.value;
-    setSearchQueryList(query);
-
-    if (query) {
-      const results = attendees.filter(
-        (attendee) =>
-          attendee.name.toLowerCase().includes(query.toLowerCase()) ||
-          attendee.email.toLowerCase().includes(query.toLowerCase())
-      );
-      setFilteredResultsTable(results);
-    } else {
-      setFilteredResultsTable([]);
-    }
-  };
-
-  // function to handle searching in the new participant modal
-  const handleSearchChange = (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-
-    if (query) {
-      const results = attendeesData.filter(
-        (attendee) =>
-          attendee.name.toLowerCase().includes(query.toLowerCase()) ||
-          attendee.email.toLowerCase().includes(query.toLowerCase())
-      );
-      setFilteredResults(results);
-    } else {
-      setFilteredResults([]);
-    }
-  };
-
-  const handleResultClick = (attendee) => {
-    setFormData({
-      ...formData,
-      name: attendee.name,
-      email: attendee.email,
-      phone: attendee.phone,
-      organization: attendee.organization,
-      title: attendee.title,
-    });
-    setSelectedResult(attendee);
-    setSearchQuery("");
-    setFilteredResults([]);
+    setSearchQueryList(e.target.value); // Update search query
   };
 
   const clearSearch = () => {
-    setSearchQuery("");
-    setFilteredResults([]);
-    setSelectedResult(null);
-  };
-
-  // Fetch attendance data for the table
-  useEffect(() => {
-    setAttendees(attendanceList);
-  }, []);
-
-  // Save data to local storage JSON file (simulating backend save)
-  const saveAttendees = (newAttendees) => {
-    setAttendees(newAttendees);
-    // Here, you'd replace this with a call to your backend API in production
-  };
-
-  // Handle adding a new participant
-  const handleAddParticipant = () => {
-    // Check for existing attendee by name or email to avoid duplicates
-    const attendeeExists = attendees.some(
-      (attendee) =>
-        attendee.name === formData.name || attendee.email === formData.email
-    );
-
-    if (attendeeExists) {
-      setModalNotificationMessage(
-        "This participant is already in the attendance list. Find the name from the attendance list on the table to add your signature"
-      );
-      setModalNotificationType("error");
-      setShowNotificationModal(true);
-      return;
-    }
-
-    // Create a new attendee with signature placeholders for each day
-    const newAttendee = {
-      ...formData,
-      signatures: {
-        day1: "", // Placeholder for day 1 signature
-        day2: "", // Placeholder for day 2 signature
-        day3: "", // Placeholder for day 3 signature
-      },
-    };
-
-    const updatedAttendees = [...attendees, newAttendee];
-    saveAttendees(updatedAttendees);
-    setShowAddModal(false);
-    setModalNotificationMessage(
-      "Your attendance has been recorded successfully. Please pass the device to the next person"
-    );
-    setModalNotificationType("success");
-    setShowNotificationModal(true);
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      organization: "",
-      title: "",
-      meetingRole: "participant",
-      signature: "",
-    });
-    sigPad.clear(); // Clear the signature pad after submission
-    console.log(newAttendee);
-  };
-
-  // Handle form input change
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
-  // Handle drawing signature
-  const [sigPad, setSigPad] = useState({});
-  const handleClearSignature = () => sigPad.clear();
-  const handleSaveSignature = () => {
-    if (!sigPad.isEmpty()) {
-      setFormData((prevData) => ({
-        ...prevData,
-        signature: sigPad.getTrimmedCanvas().toDataURL("image/png"),
-      }));
-    }
+    setSearchQueryList(""); // Clear search input
   };
 
   return (
@@ -185,7 +97,7 @@ const MeetingAttendance = () => {
       </div>
       <div className="p-8 bg-gray-100 min-h-screen container mx-auto">
         <h1 className="text-2xl font-bold mb-4 text-amber-700">
-          Meeting Name PlaceHolder Text Example
+          {meetingDetails?.title}
         </h1>
 
         {/* Meeting Details Section */}
@@ -193,38 +105,48 @@ const MeetingAttendance = () => {
           <div className="flex flex-wrap gap-10 mb-5 text-gray-500 font-semibold">
             <div className="flex items-center">
               <IoMdPeople size={20} className="mr-[10px]" />
-              <span>{"Physical Meeting"}</span>
+              <span>
+                {meetingDetails.type === "physical"
+                  ? "Physical Meeting"
+                  : meetingDetails.type === "virtual"
+                  ? "Virtual Meeting"
+                  : meetingDetails.type === "hybrid"
+                  ? "Hybrid Meeting"
+                  : "Unknown Meeting Type"}
+              </span>
             </div>
             <div className="flex items-center">
               <FaMapMarkerAlt size={20} className="mr-[10px]" />
-              <span>{"Arusha, Tanzania"}</span>
+              <span>{meetingDetails.location || "Location N/A"}</span>
             </div>
             <div className="flex items-center">
               <IoCalendarOutline size={20} className="mr-[10px]" />
-              <span className="text-green-600 mr-1">{"November 11, 2024"}</span>
+              <span className="text-green-600 mr-1">
+                {formatDate(meetingDetails.startDate) || "Start Date"}
+              </span>
               <span>-</span>
-              <span className="text-red-700 ml-1">{"November 14, 2024"}</span>
+              <span className="text-red-700 ml-1">
+                {formatDate(meetingDetails.endDate) || "End Date"}
+              </span>
             </div>
             <div className="flex items-center">
               <MdOutlineAccessTime size={25} className="mr-[10px]" />
-              <span>{"9.00AM - 5.00PM"}</span>
+              <span className="mx-1">
+                {" "}
+                {formatTime(meetingDetails.startTime) || "00.00AM "}
+              </span>
+              to
+              <span className="mx-1">
+                {formatTime(meetingDetails.endTime) || " 00.00AM "}
+              </span>
             </div>
           </div>
           <div>
-            <span className="font-bold text-gray-600 underline">
+            <span className="font-bold text-gray-600 ">
               Meeting Description
             </span>
             <p className="line-clamp-3 text-ellipsis">
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nobis,
-              optio! Dolorem facere tempora mollitia. Voluptatibus dolorem id
-              quam veritatis ab iusto corrupti nam vel. Officia enim porro ab
-              quisquam sunt. Lorem ipsum dolor sit amet consectetur adipisicing
-              elit. Adipisci enim ipsum harum dolorem eaque modi deleniti
-              facere, sed perferendis aspernatur repellat laborum nulla odit
-              animi tempore nobis? Libero, maxime autem. Lorem ipsum dolor sit
-              amet consectetur adipisicing elit. Cum blanditiis commodi fugit
-              doloribus officia qui inventore ullam aliquam, dolores odit ipsum
-              reiciendis voluptatibus neque ex culpa totam tenetur ea! Harum!
+              {meetingDetails.description || "Meeting Description Placeholder"}
             </p>
           </div>
 
@@ -259,7 +181,7 @@ const MeetingAttendance = () => {
                 placeholder="Search your name or email from the attendance list"
                 className="bg-transparent focus:outline-none pl-2 w-full text-gray-700 font-semibold"
               />
-              {searchQuery && (
+              {searchQueryList && (
                 <button onClick={clearSearch} className="ml-2 text-red-500">
                   <FaTimes />
                 </button>
@@ -366,17 +288,6 @@ const MeetingAttendance = () => {
         <AddParticipantModal
           showAddModal={showAddModal}
           setShowAddModal={setShowAddModal}
-          searchQuery={searchQuery}
-          handleSearchChange={handleSearchChange}
-          clearSearch={clearSearch}
-          filteredResults={filteredResults}
-          handleResultClick={handleResultClick}
-          selectedResult={selectedResult}
-          formData={formData}
-          handleChange={handleChange}
-          setSigPad={setSigPad}
-          handleClearSignature={handleClearSignature}
-          handleAddParticipant={handleAddParticipant}
         />
 
         <NotificationModal

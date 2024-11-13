@@ -1,23 +1,135 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FaTimes, FaSearch } from "react-icons/fa";
 import SignaturePad from "react-signature-canvas";
+import attendeesData from "../data/attendees.json";
 
-const AddParticipantModal = ({
-  showAddModal,
-  setShowAddModal,
-  searchQuery,
-  handleSearchChange,
-  clearSearch,
-  filteredResults,
-  handleResultClick,
-  selectedResult,
-  formData,
-  handleChange,
-  setSigPad,
-  handleClearSignature,
-  handleAddParticipant,
-}) => {
+const AddParticipantModal = ({ showAddModal, setShowAddModal }) => {
   if (!showAddModal) return null; // Only render if modal is visible
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredResults, setFilteredResults] = useState([]);
+  const [attendees, setAttendees] = useState([]);
+  const [selectedResult, setSelectedResult] = useState(null);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    organization: "",
+    title: "",
+    meetingRole: "participant",
+    signature: "",
+  });
+
+  //function to clear the search field
+  const clearSearch = () => {
+    setSearchQuery("");
+    setFilteredResults([]);
+    setSelectedResult(null);
+  };
+
+  // Handle form input change
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  // function to handle searching in the new participant modal
+  const handleSearchChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    if (query) {
+      const results = attendeesData.filter(
+        (attendee) =>
+          attendee.name.toLowerCase().includes(query.toLowerCase()) ||
+          attendee.email.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredResults(results);
+    } else {
+      setFilteredResults([]);
+    }
+  };
+
+  //finction to click on one of the results from the search list
+  const handleResultClick = (attendee) => {
+    setFormData({
+      ...formData,
+      name: attendee.name,
+      email: attendee.email,
+      phone: attendee.phone,
+      organization: attendee.organization,
+      title: attendee.title,
+    });
+    setSelectedResult(attendee);
+    setSearchQuery("");
+    setFilteredResults([]);
+  };
+
+  const handleAddParticipant = () => {
+    // Check for existing attendee by name or email to avoid duplicates
+    const attendeeExists = attendees.some(
+      (attendee) =>
+        attendee.name === formData.name || attendee.email === formData.email
+    );
+
+    if (attendeeExists) {
+      setModalNotificationMessage(
+        "This participant is already in the attendance list. Find the name from the attendance list on the table to add your signature"
+      );
+      setModalNotificationType("error");
+      setShowNotificationModal(true);
+      return;
+    }
+
+    // Create a new attendee with signature placeholders for each day
+    const newAttendee = {
+      ...formData,
+      signatures: {
+        day1: "", // Placeholder for day 1 signature
+        day2: "", // Placeholder for day 2 signature
+        day3: "", // Placeholder for day 3 signature
+      },
+    };
+
+    const updatedAttendees = [...attendees, newAttendee];
+    saveAttendees(updatedAttendees);
+    setShowAddModal(false);
+    setModalNotificationMessage(
+      "Your attendance has been recorded successfully. Please pass the device to the next person"
+    );
+    setModalNotificationType("success");
+    setShowNotificationModal(true);
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      organization: "",
+      title: "",
+      meetingRole: "participant",
+      signature: "",
+    });
+    sigPad.clear();
+    console.log(newAttendee);
+  };
+
+  // Handle drawing signature
+  const [sigPad, setSigPad] = useState({});
+  const handleClearSignature = () => sigPad.clear();
+  const handleSaveSignature = () => {
+    if (!sigPad.isEmpty()) {
+      setFormData((prevData) => ({
+        ...prevData,
+        signature: sigPad.getTrimmedCanvas().toDataURL("image/png"),
+      }));
+    }
+  };
+
+  // Save data to local storage JSON file (simulating backend save)
+  const saveAttendees = (newAttendees) => {
+    setAttendees(newAttendees);
+    // Here, you'd replace this with a call to your backend API in production
+  };
 
   return (
     <div className="fixed inset-0 bg-gray-700 bg-opacity-75 flex items-center justify-center">
