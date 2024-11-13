@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaSave, FaTimes } from "react-icons/fa"; // For Save and Close icons
+import { formatTime, formatTime2 } from "../utils/dateTimeFunctions";
 
 const EditMeetingModal = ({
   isOpen,
@@ -35,6 +36,16 @@ const EditMeetingModal = ({
     }));
   };
 
+  // Handle input change and update `formData`
+  const handleInputChangeTime = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: new Date(`1970-01-01T${value}:00`).toISOString(),
+    }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     saveMeetingDetails(formData);
@@ -64,7 +75,7 @@ const EditMeetingModal = ({
                 <div>
                   <label
                     htmlFor="title"
-                    className="block text-[15px] font-medium text-gray-600"
+                    className="block text-[15px] font-semibold text-gray-700"
                   >
                     Meeting Title
                   </label>
@@ -83,7 +94,7 @@ const EditMeetingModal = ({
                 <div>
                   <label
                     htmlFor="description"
-                    className="block text-[15px] font-medium text-gray-600"
+                    className="block text-[15px] font-semibold text-gray-700"
                   >
                     Meeting Description
                   </label>
@@ -102,7 +113,7 @@ const EditMeetingModal = ({
                   <div className="w-full">
                     <label
                       htmlFor="startDate"
-                      className="block text-[15px] font-medium text-gray-600"
+                      className="block text-[15px] font-semibold text-gray-700"
                     >
                       Meeting Start Date
                     </label>
@@ -119,7 +130,7 @@ const EditMeetingModal = ({
                   <div className="w-full">
                     <label
                       htmlFor="endDate"
-                      className="block text-[15px] font-medium text-gray-600"
+                      className="block text-[15px] font-semibold text-gray-700"
                     >
                       Meeting End Date
                     </label>
@@ -139,7 +150,7 @@ const EditMeetingModal = ({
                   <div className="w-full">
                     <label
                       htmlFor="startTime"
-                      className="block text-[15px] font-medium text-gray-600"
+                      className="block text-[15px] font-semibold text-gray-700"
                     >
                       Meeting Start Time
                     </label>
@@ -147,8 +158,8 @@ const EditMeetingModal = ({
                       id="startTime"
                       name="startTime"
                       type="time"
-                      value={formData.startTime}
-                      onChange={handleInputChange}
+                      value={formatTime2(formData.startTime, "HH:mm")}
+                      onChange={handleInputChangeTime}
                       className="w-full mt-1 px-4 py-3 font-semibold text-green-700 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                       required
                     />
@@ -156,7 +167,7 @@ const EditMeetingModal = ({
                   <div className="w-full">
                     <label
                       htmlFor="endTime"
-                      className="block text-[15px] font-medium text-gray-600"
+                      className="block text-[15px] font-semibold text-gray-700"
                     >
                       Meeting End Time
                     </label>
@@ -164,19 +175,20 @@ const EditMeetingModal = ({
                       id="endTime"
                       name="endTime"
                       type="time"
-                      value={formData.endTime}
-                      onChange={handleInputChange}
+                      value={formatTime2(formData.endTime, "HH:mm")}
+                      onChange={handleInputChangeTime}
                       className="w-full mt-1 px-4 py-3 font-semibold text-red-500 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                       required
                     />
                   </div>
                 </div>
+
                 {/* Additional fields */}
                 <div className="flex justify-between items-center space-x-10">
                   <div className="w-full">
                     <label
                       htmlFor="location"
-                      className="block text-[15px] font-medium text-gray-600"
+                      className="block text-[15px] font-semibold text-gray-700"
                     >
                       Location
                     </label>
@@ -193,7 +205,7 @@ const EditMeetingModal = ({
                   <div className="w-full">
                     <label
                       htmlFor="type"
-                      className="block text-[15px] font-medium text-gray-600"
+                      className="block text-[15px] font-semibold text-gray-700"
                     >
                       Meeting Type
                     </label>

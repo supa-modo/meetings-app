@@ -16,7 +16,7 @@ function Header() {
   };
 
   return (
-    <header className="flex sticky justify-between items-center px-3 md:px-12 py-4 border-b bg-white shadow-sm">
+    <header className="flex sticky justify-between items-center px-3 md:px-12 py-4 border-b border-gray-100 bg-white shadow-sm">
       {/* Logo / App Name */}
       <div className="flex items-center text-green-600 cursor-pointer w-1/3">
         <IoLogoIonitron size={35} className="mr-2 text-2xl" />{" "}

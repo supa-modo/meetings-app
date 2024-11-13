@@ -15,7 +15,7 @@ const EditAttendeeModal = ({ attendee, onSave, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 backdrop-blur-sm">
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-60 flex justify-center items-center z-50 transition duration-300 backdrop-blur-sm">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl relative">
         <button
           onClick={onClose}

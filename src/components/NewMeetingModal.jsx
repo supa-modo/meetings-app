@@ -58,7 +58,7 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                 <div>
                   <label
                     htmlFor="title"
-                    className="block text-[15px] font-medium text-gray-600"
+                    className="block text-[15px] font-semibold text-gray-700"
                   >
                     Meeting Title
                   </label>
@@ -77,7 +77,7 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                 <div>
                   <label
                     htmlFor="description"
-                    className="block text-[15px] font-medium text-gray-600"
+                    className="block text-[15px] font-medium text-gray-700"
                   >
                     Meeting Description
                   </label>
@@ -86,7 +86,7 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                     id="description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Enter meeting description, agenda, or links"
+                    placeholder="Enter meeting Description / Agenda / Links - for virtual and hybrid meetings"
                     className="w-full h-28 p-2 mt-1 font-semibold text-gray-500 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                     required
                   ></textarea>
@@ -96,7 +96,7 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                   <div className="w-full">
                     <label
                       htmlFor="startDate"
-                      className="block text-[15px] font-medium text-gray-600"
+                      className="block text-[15px] font-semibold text-gray-700"
                     >
                       Start Date
                     </label>
@@ -113,7 +113,7 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                   <div className="w-full">
                     <label
                       htmlFor="endDate"
-                      className="block text-[15px] font-medium text-gray-600"
+                      className="block text-[15px] font-semibold text-gray-700"
                     >
                       End Date
                     </label>
@@ -133,7 +133,7 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                   <div className="w-full">
                     <label
                       htmlFor="startTime"
-                      className="block text-[15px] font-medium text-gray-600"
+                      className="block text-[15px] font-semibold text-gray-700"
                     >
                       Start Time
                     </label>
@@ -150,7 +150,7 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                   <div className="w-full">
                     <label
                       htmlFor="endTime"
-                      className="block text-[15px] font-medium text-gray-600"
+                      className="block text-[15px] font-semibold text-gray-700"
                     >
                       End Time
                     </label>
@@ -170,7 +170,7 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                   <div className="w-full">
                     <label
                       htmlFor="location"
-                      className="block text-[15px] font-medium text-gray-600"
+                      className="block text-[15px] font-semibold text-gray-700"
                     >
                       Location
                     </label>
@@ -187,7 +187,7 @@ const NewMeetingModal = ({ isOpen, closeModal, onAddMeeting }) => {
                   <div className="w-full">
                     <label
                       htmlFor="type"
-                      className="block text-[15px] font-medium text-gray-600"
+                      className="block text-[15px] font-semibold text-gray-700"
                     >
                       Meeting Type
                     </label>

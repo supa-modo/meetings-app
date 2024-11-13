@@ -222,35 +222,35 @@ const AttendeesDirectory = () => {
             ))}
           </tbody>
         </table>
-      </div>
-      {showViewModal && (
-        <ViewAttendeeModal
-          attendee={selectedAttendee}
-          onClose={() => setShowViewModal(false)}
-        />
-      )}
-      {showAddModal && (
-        <AddAttendeeModal
-          onAddAttendee={handleAddAttendee}
-          onClose={() => setShowAddModal(false)}
-        />
-      )}
-      {showEditModal && (
-        <EditAttendeeModal
-          attendee={selectedAttendee}
-          onSave={handleEditAttendee}
-          onClose={() => setShowEditModal(false)}
-        />
-      )}
+        {showViewModal && (
+          <ViewAttendeeModal
+            attendee={selectedAttendee}
+            onClose={() => setShowViewModal(false)}
+          />
+        )}
+        {showAddModal && (
+          <AddAttendeeModal
+            onAddAttendee={handleAddAttendee}
+            onClose={() => setShowAddModal(false)}
+          />
+        )}
+        {showEditModal && (
+          <EditAttendeeModal
+            attendee={selectedAttendee}
+            onSave={handleEditAttendee}
+            onClose={() => setShowEditModal(false)}
+          />
+        )}
 
-      <NotificationModal
-        isOpen={showNotificationModal}
-        onClose={() => {
-          setShowNotificationModal(false);
-        }}
-        message={modalNotificationMessage}
-        modalType={modalNotificationType}
-      />
+        <NotificationModal
+          isOpen={showNotificationModal}
+          onClose={() => {
+            setShowNotificationModal(false);
+          }}
+          message={modalNotificationMessage}
+          modalType={modalNotificationType}
+        />
+      </div>
     </div>
   );
 };
