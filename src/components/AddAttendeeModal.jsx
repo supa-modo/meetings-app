@@ -48,11 +48,11 @@ const AddAttendeeModal = ({ onAddAttendee, onClose }) => {
         >
           <FaTimes />
         </button>
-        <h2 className="text-xl font-bold text-gray-700 mb-3">
+        <h2 className="text-2xl font-bold text-gray-500 mb-5">
           Add New Attendee
         </h2>
         <p className="pl-4 mb-4 font-semibold text-gray-600">
-          Enter the participant's details below
+          Enter the new participant's details below
         </p>
         <div className="md:px-14 font-semibold">
           <input

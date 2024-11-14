@@ -155,7 +155,10 @@ const MeetingsPage = () => {
   };
 
   const openNewMeetingModal = () => setIsNewMeetingModalOpen(true);
-  const closeNewMeetingModal = () => setIsNewMeetingModalOpen(false);
+  const closeNewMeetingModal = () => {
+    setIsNewMeetingModalOpen(false);
+    fetchMeetings();
+  };
 
   const handleEditMeeting = (meeting) => {
     setSelectedMeeting(meeting);

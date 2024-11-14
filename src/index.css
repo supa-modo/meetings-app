@@ -5,5 +5,6 @@
 .cards-overflow::-webkit-scrollbar {
   display: none;
 }
-
-
+.meeting-days-overflow::-webkit-scrollbar {
+  display: none;
+}

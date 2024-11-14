@@ -2,14 +2,20 @@ import React, { useState, useEffect } from "react";
 import { FaTimes, FaSearch } from "react-icons/fa";
 import SignaturePad from "react-signature-canvas";
 import attendeesData from "../data/attendees.json";
+import axios from "../utils/axios";
+import NotificationModal from "./NotificationModal";
 
-const AddParticipantModal = ({ showAddModal, setShowAddModal }) => {
+const AddParticipantModal = ({ meetingId, showAddModal, setShowAddModal }) => {
   if (!showAddModal) return null; // Only render if modal is visible
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredResults, setFilteredResults] = useState([]);
   const [attendees, setAttendees] = useState([]);
   const [selectedResult, setSelectedResult] = useState(null);
+
+  const [modalNotificationMessage, setModalNotificationMessage] = useState(""); // For error/success messages
+  const [modalNotificationType, setModalNotificationType] = useState(""); // "success" or "error"
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -20,6 +26,25 @@ const AddParticipantModal = ({ showAddModal, setShowAddModal }) => {
     meetingRole: "participant",
     signature: "",
   });
+
+  useEffect(() => {
+    fetchAttendees();
+  }, []);
+
+  const fetchAttendees = async () => {
+    try {
+      const response = await axios.get("/attendees/getAllAttendees");
+      setAttendees(response.data);
+    } catch (error) {
+      console.error("Error fetching attendees:", error);
+      setModalNotificationMessage(
+        "Error fetching attendees, check your internet connection:",
+        error
+      );
+      setShowNotificationModal(true);
+      setModalNotificationType("error");
+    }
+  };
 
   //function to clear the search field
   const clearSearch = () => {
@@ -40,7 +65,7 @@ const AddParticipantModal = ({ showAddModal, setShowAddModal }) => {
     setSearchQuery(query);
 
     if (query) {
-      const results = attendeesData.filter(
+      const results = attendees.filter(
         (attendee) =>
           attendee.name.toLowerCase().includes(query.toLowerCase()) ||
           attendee.email.toLowerCase().includes(query.toLowerCase())
@@ -66,51 +91,117 @@ const AddParticipantModal = ({ showAddModal, setShowAddModal }) => {
     setFilteredResults([]);
   };
 
-  const handleAddParticipant = () => {
-    // Check for existing attendee by name or email to avoid duplicates
-    const attendeeExists = attendees.some(
-      (attendee) =>
-        attendee.name === formData.name || attendee.email === formData.email
-    );
+  const handleAddParticipant = async () => {
+    // Check if the signature is saved
+    // if (!formData.signature) {
+    //   setModalNotificationMessage(
+    //     "Please add your signature to record attendance."
+    //   );
+    //   setShowNotificationModal(true);
+    //   setModalNotificationType("error");
+    //   return;
+    // }
 
-    if (attendeeExists) {
+    // Prepare participant data
+    const participantData = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      organization: formData.organization,
+      title: formData.title,
+      // meetingRole: formData.meetingRole,
+      // signature: formData.signature,
+    };
+
+    try {
+      // Check if the attendee already exists based on name and email
+      const checkResponse = await axios.get("/attendees/checkAttendee", {
+        params: {
+          name: formData.name,
+          email: formData.email,
+        },
+      });
+
+      let attendeeId;
+
+      // Assuming checkResponse is the response from the axios call
+      if (checkResponse.data.exists === true) {
+        // If attendee exists, retrieve their attendee ID
+        const attendeeId = checkResponse.data.attendeeId;
+        console.log(attendeeId);
+
+        // Check if participant already exists by name or email in the participation list database for that meeting
+        const checkParticipant = await axios.get(
+          `/participation/checkParticipant`,
+          {
+            params: {
+              attendeeId,
+              meetingId,
+            },
+          }
+        );
+
+        if (checkParticipant.data.exists === true) {
+          // If participant already exists, show error message
+          setModalNotificationMessage(
+            "This participant is already in the attendance list. Find the name from the attendance list on the table to add your signature"
+          );
+          setModalNotificationType("error");
+          setShowNotificationModal(true);
+          return;
+        }
+      } else {
+        // If attendee does not exist, add them
+        const addAttendeeResponse = await axios.post(
+          "/attendees/createAttendee",
+          participantData
+        );
+
+        // Use the newly created attendee's ID
+        const attendeeId = addAttendeeResponse.data.attendeeId;
+        console.log(attendeeId);
+      }
+
+      const meetingRole = formData.meetingRole;
+
+      // Now add the participation record using the attendee ID
+      const addParticipationResponse = await axios.post(
+        "/participation/recordParticipation",
+        {
+          attendeeId,
+          meetingId,
+          meetingRole,
+        }
+      );
+
+      if (addParticipationResponse.status === 200) {
+        setModalNotificationMessage(
+          "Your attendance has been recorded successfully."
+        );
+        setModalNotificationType("success");
+        setShowNotificationModal(true);
+        setShowAddModal(false); // Close modal on success
+
+        // Clear the form
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          organization: "",
+          title: "",
+          meetingRole: "participant",
+          signature: "",
+        });
+        sigPad.clear();
+      }
+    } catch (error) {
+      console.error("Error recording attendance:", error);
       setModalNotificationMessage(
-        "This participant is already in the attendance list. Find the name from the attendance list on the table to add your signature"
+        "Failed to record attendance. Please try again."
       );
       setModalNotificationType("error");
       setShowNotificationModal(true);
-      return;
     }
-
-    // Create a new attendee with signature placeholders for each day
-    const newAttendee = {
-      ...formData,
-      signatures: {
-        day1: "", // Placeholder for day 1 signature
-        day2: "", // Placeholder for day 2 signature
-        day3: "", // Placeholder for day 3 signature
-      },
-    };
-
-    const updatedAttendees = [...attendees, newAttendee];
-    saveAttendees(updatedAttendees);
-    setShowAddModal(false);
-    setModalNotificationMessage(
-      "Your attendance has been recorded successfully. Please pass the device to the next person"
-    );
-    setModalNotificationType("success");
-    setShowNotificationModal(true);
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      organization: "",
-      title: "",
-      meetingRole: "participant",
-      signature: "",
-    });
-    sigPad.clear();
-    console.log(newAttendee);
   };
 
   // Handle drawing signature
@@ -123,12 +214,6 @@ const AddParticipantModal = ({ showAddModal, setShowAddModal }) => {
         signature: sigPad.getTrimmedCanvas().toDataURL("image/png"),
       }));
     }
-  };
-
-  // Save data to local storage JSON file (simulating backend save)
-  const saveAttendees = (newAttendees) => {
-    setAttendees(newAttendees);
-    // Here, you'd replace this with a call to your backend API in production
   };
 
   return (
@@ -281,13 +366,25 @@ const AddParticipantModal = ({ showAddModal, setShowAddModal }) => {
         </div>
         <div className="text-center">
           <button
-            onClick={handleAddParticipant}
+            onClick={() => {
+              handleSaveSignature();
+              handleAddParticipant();
+            }}
             className="mt-4 bg-blue-500 font-semibold text-white px-8 py-2 rounded-sm"
           >
             Submit Attendance
           </button>
         </div>
       </div>
+
+      <NotificationModal
+        isOpen={showNotificationModal}
+        onClose={() => {
+          setShowNotificationModal(false);
+        }}
+        message={modalNotificationMessage}
+        modalType={modalNotificationType}
+      />
     </div>
   );
 };

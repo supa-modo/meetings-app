@@ -13,6 +13,19 @@ import NavBar from "../components/Navbar";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "../utils/axios";
 import { formatDate, formatTime } from "../utils/dateTimeFunctions";
+import AttendanceTable from "../components/AttendanceTable";
+
+// Helper function to calculate the number of days
+const getMeetingDays = (startDate, endDate) => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const days = [];
+  while (start <= end) {
+    days.push(new Date(start));
+    start.setDate(start.getDate() + 1);
+  }
+  return days;
+};
 
 const MeetingAttendance = () => {
   const { meetingID } = useParams(); // Extract the meeting ID from the URL parameters
@@ -30,11 +43,18 @@ const MeetingAttendance = () => {
   const [searchQueryList, setSearchQueryList] = useState("");
   const [filteredResultsTable, setFilteredResultsTable] = useState([]);
 
+  const [meetingDays, setMeetingDays] = useState([]);
+
   useEffect(() => {
     const fetchMeetingDetails = async () => {
       try {
         const response = await axios.get(`/meetings/getMeeting/${meetingID}`);
-        setMeetingDetails(response.data); // Set the meeting details into state
+        setMeetingDetails(response.data);
+        const days = getMeetingDays(
+          response.data.startDate,
+          response.data.endDate
+        );
+        setMeetingDays(days);
       } catch (error) {
         console.error("Error fetching meeting details:", error);
         setModalNotificationMessage(
@@ -68,7 +88,14 @@ const MeetingAttendance = () => {
   }, [searchQueryList, attendees]);
 
   if (!meetingDetails) {
-    return <div>Loading meeting details...</div>; // Show loading message while fetching the meeting details
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-20 w-20 border-t-8 border-amber-700 border-solid border-opacity-80"></div>
+        <p className="mt-4 text-gray-500 font-semibold text-lg">
+          Loading meeting details...
+        </p>
+      </div>
+    ); // Show loading message while fetching the meeting details
   }
 
   // function to simulate loading and starting the attendance signing
@@ -190,102 +217,31 @@ const MeetingAttendance = () => {
           </div>
         </div>
 
-        <div className="pl-2 flex space-x-6 mb-3">
-          <p
-            onClick={null}
-            className="px-4 py-1 text-sm cursor-pointer hover:bg-amber-600 hover:text-white font-semibold rounded-sm text-gray-500 bg-gray-300"
-          >
-            Day 1: 2024-11-08
-          </p>
-          <p className="px-4 py-1 text-sm cursor-pointer hover:bg-amber-600 hover:text-white font-semibold rounded-sm text-white bg-amber-600">
-            Day 2: 2024-11-08
-          </p>
-          <p className="px-4 py-1 text-sm cursor-pointer hover:bg-amber-600 hover:text-white font-semibold rounded-sm text-gray-500 bg-gray-300">
-            Day 3: 2024-11-08
-          </p>
-          <p className="px-4 py-1 text-sm cursor-pointer hover:bg-amber-600 hover:text-white font-semibold rounded-sm text-gray-500 bg-gray-300">
-            Day 4: 2024-11-08
-          </p>
+        <div className="meeting-days-overflow pl-2 flex space-x-6 mb-3 overflow-x-auto">
+          {meetingDays.map((day, index) => {
+            const isToday = day.toDateString() === new Date().toDateString();
 
-          <p className="px-4 py-1 text-sm cursor-pointer hover:bg-amber-600 hover:text-white font-semibold rounded-sm text-gray-500 bg-gray-300">
-            Day 5: 2024-11-08
-          </p>
+            return (
+              <p
+                key={index}
+                className={`px-4 max-h-7 min-w-[12%] py-1 text-sm cursor-pointer font-semibold rounded-sm text-gray-500 ${
+                  isToday
+                    ? "bg-amber-600 text-white"
+                    : "bg-gray-300 hover:bg-amber-600 hover:text-white"
+                }`}
+              >
+                Day {index + 1}: {formatDate(day)}
+              </p>
+            );
+          })}
         </div>
 
         {/* Attendance Table */}
-        <table className="min-w-full bg-white shadow-md rounded-md overflow-hidden">
-          <thead className="bg-gray-500">
-            <tr className="text-white">
-              <th className="p-4 text-left">#</th>
-              <th className="px-3 py-4 text-left ">Participant Name</th>
-              <th className="px-3 py-4 text-left ">Email</th>
-              <th className="px-3 py-4 text-left ">Phone</th>
-              <th className="px-3 py-4 text-left ">Organization</th>
-              <th className="px-3 py-4 text-left ">Meeting Role</th>
-              <th className="px-3 py-4 text-left ">Day 1</th>
-              <th className="px-3 py-4 text-left ">Day 2</th>
-              <th className="px-3 py-4 text-left ">Day 3</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(filteredResultsTable.length
-              ? filteredResultsTable
-              : attendees
-            ).map((attendee, index) => (
-              <tr
-                key={index}
-                className={`${
-                  index % 2 === 0 ? "bg-gray-100" : "bg-amber-50"
-                } cursor-pointer hover:bg-gray-300 hover:shadow-md transition duration-200 font-semibold text-gray-500`}
-              >
-                <td className="p-3">{index + 1} .</td>
-                <td className="p-3 text-gray-700">{attendee.name}</td>
-                <td className="p-3">{attendee.email}</td>
-                <td className="p-3">{attendee.phone}</td>
-                <td className="p-3">{attendee.organization}</td>
-                <td className="p-3">{attendee.meetingRole}</td>
-
-                {/* Display signatures for each day */}
-                <td className="p-3 italic text-sm text-blue-500 text-center">
-                  {attendee.signatures.day1 ? (
-                    <img
-                      src={attendee.signatures.day1}
-                      alt="Day 1 Signature"
-                      className="h-8 mx-auto "
-                    />
-                  ) : (
-                    "Not Signed"
-                  )}
-                </td>
-                <td className="p-3 italic text-sm text-blue-500 text-center">
-                  {attendee.signatures.day2 ? (
-                    <img
-                      src={attendee.signatures.day2}
-                      alt="Day 2 Signature"
-                      className="h-8 mx-auto"
-                    />
-                  ) : (
-                    "Not Signed"
-                  )}
-                </td>
-                <td className="p-3 italic text-sm text-blue-500 text-center">
-                  {attendee.signatures.day3 ? (
-                    <img
-                      src={attendee.signatures.day3}
-                      alt="Day 3 Signature"
-                      className="h-8 mx-auto"
-                    />
-                  ) : (
-                    "Not Signed"
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <AttendanceTable meetingDays={meetingDays} attendees={attendees} />
 
         {/* Add New Participant Modal */}
         <AddParticipantModal
+          meetingId={meetingID}
           showAddModal={showAddModal}
           setShowAddModal={setShowAddModal}
         />
