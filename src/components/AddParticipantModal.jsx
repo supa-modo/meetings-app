@@ -5,7 +5,12 @@ import attendeesData from "../data/attendees.json";
 import axios from "../utils/axios";
 import NotificationModal from "./NotificationModal";
 
-const AddParticipantModal = ({ meetingId, showAddModal, setShowAddModal }) => {
+const AddParticipantModal = ({
+  meetingId,
+  showAddModal,
+  setShowAddModal,
+  fetchParticipants,
+}) => {
   if (!showAddModal) return null; // Only render if modal is visible
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -102,18 +107,17 @@ const AddParticipantModal = ({ meetingId, showAddModal, setShowAddModal }) => {
     //   return;
     // }
 
-    // Prepare participant data
     const participantData = {
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
       organization: formData.organization,
       title: formData.title,
-      // meetingRole: formData.meetingRole,
-      // signature: formData.signature,
     };
 
     try {
+      let attendeeId;
+
       // Check if the attendee already exists based on name and email
       const checkResponse = await axios.get("/attendees/checkAttendee", {
         params: {
@@ -122,15 +126,12 @@ const AddParticipantModal = ({ meetingId, showAddModal, setShowAddModal }) => {
         },
       });
 
-      let attendeeId;
-
-      // Assuming checkResponse is the response from the axios call
-      if (checkResponse.data.exists === true) {
+      if (checkResponse.data.exists) {
         // If attendee exists, retrieve their attendee ID
-        const attendeeId = checkResponse.data.attendeeId;
-        console.log(attendeeId);
+        attendeeId = checkResponse.data.attendeeId;
+        console.log("Existing Attendee ID:", attendeeId);
 
-        // Check if participant already exists by name or email in the participation list database for that meeting
+        // Check if the participant already exists in the meeting attendance
         const checkParticipant = await axios.get(
           `/participation/checkParticipant`,
           {
@@ -141,8 +142,8 @@ const AddParticipantModal = ({ meetingId, showAddModal, setShowAddModal }) => {
           }
         );
 
-        if (checkParticipant.data.exists === true) {
-          // If participant already exists, show error message
+        if (checkParticipant.data.exists) {
+          // Participant already exists in the attendance list
           setModalNotificationMessage(
             "This participant is already in the attendance list. Find the name from the attendance list on the table to add your signature"
           );
@@ -156,31 +157,27 @@ const AddParticipantModal = ({ meetingId, showAddModal, setShowAddModal }) => {
           "/attendees/createAttendee",
           participantData
         );
-
-        // Use the newly created attendee's ID
-        const attendeeId = addAttendeeResponse.data.attendeeId;
-        console.log(attendeeId);
+        attendeeId = addAttendeeResponse.data.attendeeId;
+        console.log("New Attendee ID:", attendeeId);
       }
 
-      const meetingRole = formData.meetingRole;
+      // Add the participation record using the retrieved or created attendee ID
 
-      // Now add the participation record using the attendee ID
       const addParticipationResponse = await axios.post(
         "/participation/recordParticipation",
         {
           attendeeId,
           meetingId,
-          meetingRole,
+          meetingRole: formData.meetingRole,
         }
       );
 
-      if (addParticipationResponse.status === 200) {
+      if (addParticipationResponse.data.success === true) {
         setModalNotificationMessage(
-          "Your attendance has been recorded successfully."
+          "Your meeting attendance has been recorded successfully. Kindly pass the device to the next person. Thank you"
         );
         setModalNotificationType("success");
         setShowNotificationModal(true);
-        setShowAddModal(false); // Close modal on success
 
         // Clear the form
         setFormData({
@@ -217,11 +214,14 @@ const AddParticipantModal = ({ meetingId, showAddModal, setShowAddModal }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-700 bg-opacity-75 flex items-center justify-center">
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex justify-center items-center z-50 transition duration-300">
       <div className="bg-white rounded-lg p-6 w-2/3 relative">
         <button
           className="absolute text-2xl top-4 right-4 text-red-500 hover:text-red-700"
-          onClick={() => setShowAddModal(false)}
+          onClick={() => {
+            fetchParticipants;
+            setShowAddModal(false);
+          }}
         >
           <FaTimes />
         </button>
@@ -381,6 +381,8 @@ const AddParticipantModal = ({ meetingId, showAddModal, setShowAddModal }) => {
         isOpen={showNotificationModal}
         onClose={() => {
           setShowNotificationModal(false);
+          setShowAddModal(false);
+          fetchParticipants;
         }}
         message={modalNotificationMessage}
         modalType={modalNotificationType}

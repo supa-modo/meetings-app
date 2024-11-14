@@ -11,7 +11,7 @@ const MeetingCard = ({ meeting, onClick }) => {
       onClick={onClick}
       className="bg-white p-4 rounded-md mb-6 shadow-md transition hover:shadow-lg space-y-2 w-[26rem] h-[15rem] flex-shrink-0 snap-center flex flex-col row-span-4"
     >
-      <h3 className="text-lg font-bold text-gray-500 line-clamp-2 text-ellipsis">
+      <h3 className="text-lg font-semibold text-amber-800 line-clamp-2 text-ellipsis">
         {meeting.title}
       </h3>
       <div className="flex items-center text-gray-500 text-sm font-semibold">

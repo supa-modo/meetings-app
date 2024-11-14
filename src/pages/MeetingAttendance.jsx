@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import attendanceList from "../data/attendancelist.json";
 import { FaMapMarkerAlt, FaPlus, FaSearch, FaTimes } from "react-icons/fa";
-import SignaturePad from "react-signature-canvas";
 import Header from "../components/Header";
 import { IoMdPeople } from "react-icons/io";
 import { MdOutlineAccessTime } from "react-icons/md";
@@ -70,8 +68,24 @@ const MeetingAttendance = () => {
 
   // Set attendees list
   useEffect(() => {
-    setAttendees(attendanceList);
+    fetchParticipants();
   }, []);
+
+  const fetchParticipants = async () => {
+    try {
+      const response = await axios.get(
+        `/participation/getParticipationByMeeting/${meetingID}`
+      );
+      const participantsData = response.data;
+
+      // Sort participantsData by `id` in descending order (latest at the top)
+      const sortedParticipants = participantsData.sort((a, b) => b.id - a.id);
+
+      setAttendees(sortedParticipants);
+    } catch (error) {
+      console.error("Error fetching participants:", error);
+    }
+  };
 
   // Filter attendance list based on search query
   useEffect(() => {
@@ -244,6 +258,7 @@ const MeetingAttendance = () => {
           meetingId={meetingID}
           showAddModal={showAddModal}
           setShowAddModal={setShowAddModal}
+          fetchParticipants={fetchParticipants()}
         />
 
         <NotificationModal
