@@ -42,6 +42,7 @@ const MeetingAttendance = () => {
   const [filteredResultsTable, setFilteredResultsTable] = useState([]);
 
   const [meetingDays, setMeetingDays] = useState([]);
+  const [meetingStartDate, setMeetingStartDate] = useState([]);
 
   useEffect(() => {
     fetchMeetingDetails();
@@ -51,6 +52,7 @@ const MeetingAttendance = () => {
     try {
       const response = await axios.get(`/meetings/getMeeting/${meetingID}`);
       setMeetingDetails(response.data);
+      setMeetingStartDate(response.data.startDate);
       const days = getMeetingDays(
         response.data.startDate,
         response.data.endDate
@@ -263,6 +265,7 @@ const MeetingAttendance = () => {
         {/* Add New Participant Modal */}
         <AddParticipantModal
           meetingId={meetingID}
+          meetingStartDate={meetingStartDate}
           showAddModal={showAddModal}
           setShowAddModal={setShowAddModal}
           onSuccess={() => setShowAddModal(false)}

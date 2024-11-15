@@ -27,3 +27,13 @@ export function formatTime2(time, format = "HH:mm") {
 
   return `${hours}:${minutes}`; // Default format
 }
+
+// Helper function to convert Base64 to Blob
+export function base64ToBlob(base64Data, contentType = "image/png") {
+  const byteCharacters = atob(base64Data.split(",")[1]); // Extract image data
+  const byteNumbers = new Array(byteCharacters.length)
+    .fill()
+    .map((_, i) => byteCharacters.charCodeAt(i));
+  const byteArray = new Uint8Array(byteNumbers);
+  return new Blob([byteArray], { type: contentType });
+}
