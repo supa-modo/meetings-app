@@ -44,27 +44,27 @@ const MeetingAttendance = () => {
   const [meetingDays, setMeetingDays] = useState([]);
 
   useEffect(() => {
-    const fetchMeetingDetails = async () => {
-      try {
-        const response = await axios.get(`/meetings/getMeeting/${meetingID}`);
-        setMeetingDetails(response.data);
-        const days = getMeetingDays(
-          response.data.startDate,
-          response.data.endDate
-        );
-        setMeetingDays(days);
-      } catch (error) {
-        console.error("Error fetching meeting details:", error);
-        setModalNotificationMessage(
-          "Error fetching meeting details. Please check your internet connection."
-        );
-        setModalNotificationType("error");
-        setShowNotificationModal(true);
-      }
-    };
-
     fetchMeetingDetails();
-  }, [meetingID]); // Re-fetch when the meeting ID changes
+  }, []);
+
+  const fetchMeetingDetails = async () => {
+    try {
+      const response = await axios.get(`/meetings/getMeeting/${meetingID}`);
+      setMeetingDetails(response.data);
+      const days = getMeetingDays(
+        response.data.startDate,
+        response.data.endDate
+      );
+      setMeetingDays(days);
+    } catch (error) {
+      console.error("Error fetching meeting details:", error);
+      setModalNotificationMessage(
+        "Error fetching meeting details. Please check your internet connection."
+      );
+      setModalNotificationType("error");
+      setShowNotificationModal(true);
+    }
+  };
 
   // Set attendees list
   useEffect(() => {
@@ -86,6 +86,13 @@ const MeetingAttendance = () => {
       console.error("Error fetching participants:", error);
     }
   };
+
+  // Fetch participants whenever the modal closes
+  useEffect(() => {
+    if (!showAddModal) {
+      fetchParticipants();
+    }
+  }, [showAddModal]);
 
   // Filter attendance list based on search query
   useEffect(() => {
@@ -258,7 +265,7 @@ const MeetingAttendance = () => {
           meetingId={meetingID}
           showAddModal={showAddModal}
           setShowAddModal={setShowAddModal}
-          fetchParticipants={fetchParticipants()}
+          onSuccess={() => setShowAddModal(false)}
         />
 
         <NotificationModal

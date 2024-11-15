@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaTimes, FaSearch } from "react-icons/fa";
 import SignaturePad from "react-signature-canvas";
-import attendeesData from "../data/attendees.json";
 import axios from "../utils/axios";
 import NotificationModal from "./NotificationModal";
 
@@ -9,7 +8,7 @@ const AddParticipantModal = ({
   meetingId,
   showAddModal,
   setShowAddModal,
-  fetchParticipants,
+  onSuccess,
 }) => {
   if (!showAddModal) return null; // Only render if modal is visible
 
@@ -178,7 +177,7 @@ const AddParticipantModal = ({
         );
         setModalNotificationType("success");
         setShowNotificationModal(true);
-
+        onSuccess();
         // Clear the form
         setFormData({
           name: "",
@@ -219,7 +218,6 @@ const AddParticipantModal = ({
         <button
           className="absolute text-2xl top-4 right-4 text-red-500 hover:text-red-700"
           onClick={() => {
-            fetchParticipants;
             setShowAddModal(false);
           }}
         >
@@ -382,7 +380,6 @@ const AddParticipantModal = ({
         onClose={() => {
           setShowNotificationModal(false);
           setShowAddModal(false);
-          fetchParticipants;
         }}
         message={modalNotificationMessage}
         modalType={modalNotificationType}

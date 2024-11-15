@@ -38,7 +38,7 @@ const ViewAttendeeModal = ({ attendee, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex justify-center items-center z-50 transition duration-300">
-      <div className="bg-white rounded-lg pr-8 pl-0 shadow-lg relative px-10 lg:w-[50%] max-h-[45%] flex">
+      <div className="bg-white rounded-lg pr-8 pl-0 shadow-lg relative px-10 lg:w-[50%] max-h-[50%] flex">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
@@ -46,22 +46,22 @@ const ViewAttendeeModal = ({ attendee, onClose }) => {
           <FaTimes className="text-xl" />
         </button>
 
-        <div className="w-2/5 px-3 pl-10 py-8 bg-amber-50">
+        <div className="w-2/5 px-3 pl-10 py-12 bg-amber-50">
           <div className="flex px-14 justify-center mb-4">
-            <div className="bg-blue-600 text-white rounded-full w-16 h-16 flex justify-center items-center text-2xl font-semibold">
+            <div className="bg-blue-600 text-white rounded-full w-20 h-20 flex justify-center items-center text-2xl font-semibold">
               {attendee.name[0]}
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-center text-gray-500 mb-4">
-            Participant Details
+          <h2 className="text-2xl font-bold text-center text-gray-500 mb-4 line-clamp-2">
+            {attendee.name}
           </h2>
           <div className="space-y-4">
-            <p className="text-gray-500">
+            {/* <p className="text-gray-500">
               <strong className="font-medium ">Name:</strong>
               <span className="pl-4 font-semibold text-blue-700 text-[15px]">
                 {attendee.name}
               </span>
-            </p>
+            </p> */}
             <p className="text-gray-500">
               <strong className="font-medium ">Email:</strong>
               <span className="pl-4 font-semibold text-blue-700 text-[15px]">
@@ -74,16 +74,22 @@ const ViewAttendeeModal = ({ attendee, onClose }) => {
                 {attendee.phone}
               </span>
             </p>
-            <p className="text-gray-500">
+            <p className="text-gray-500 line-clamp-2">
               <strong className="font-medium ">Organization:</strong>
               <span className="pl-4 font-semibold text-blue-700 text-[15px]">
                 {attendee.organization}
               </span>
             </p>
-            <p className="text-gray-500">
+            <p className="text-gray-500 line-clamp-2">
               <strong className="font-medium ">Title:</strong>
               <span className="pl-4 font-semibold text-blue-700 text-[15px]">
                 {attendee.title}
+              </span>
+            </p>
+            <p className="text-gray-500">
+              <strong className="font-medium ">Meetings Attended:</strong>
+              <span className="pl-4 font-semibold text-blue-700 text-[15px]">
+                {23}
               </span>
             </p>
           </div>
@@ -95,7 +101,10 @@ const ViewAttendeeModal = ({ attendee, onClose }) => {
           </h2>
           <div className=" overflow-y-auto max-h-[90%] space-y-2 pr-2">
             {meetings?.map((meeting, index) => (
-              <div key={index} className="bg-gray-200 p-4 rounded-lg shadow">
+              <div
+                key={index}
+                className="bg-gray-200 px-4 py-[11px] rounded-lg shadow"
+              >
                 <p className="text-gray-800 pb-[5px] font-medium line-clamp-1 text-ellipsis">
                   {meeting.title}
                 </p>

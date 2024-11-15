@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from "react";
+import { React, useState } from "react";
 import axios from "../utils/axios";
 
 const AttendanceTable = ({ meetingDays, attendees }) => {
@@ -42,17 +42,17 @@ const AttendanceTable = ({ meetingDays, attendees }) => {
             <tr
               key={index}
               className={`${
-                index % 2 === 0 ? "bg-gray-100" : "bg-amber-50"
+                index % 2 === 0 ? "bg-orange-50" : "bg-amber-10"
               } cursor-pointer hover:bg-gray-300 hover:shadow-md transition duration-200 font-semibold text-gray-500`}
             >
               <td className="p-3">{index + 1}.</td>
               <td className="p-3 text-gray-700 hidden">
                 {attendee.Attendee ? attendee.Attendee.id : "N/A"}
               </td>
-              <td className="p-3 text-gray-700 max-w-[220px] truncate">
+              <td className="p-3 text-gray-700 max-w-[200px] truncate">
                 {attendee.Attendee ? attendee.Attendee.name : "N/A"}
               </td>
-              <td className="p-3 max-w-[220px] truncate">
+              <td className="p-3 max-w-[200px] truncate">
                 {attendee.Attendee ? attendee.Attendee.email : "N/A"}
               </td>
               <td className="p-3">
@@ -86,7 +86,7 @@ const AttendanceTable = ({ meetingDays, attendees }) => {
 
       {/* Modal to display all days with signatures */}
       {showAllDays && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-80 flex justify-center items-center z-50 transition duration-300">
           <div className="bg-white p-6 rounded-md shadow-lg w-full max-w-[80%] overflow-y-auto max-h-[80vh]">
             <button
               onClick={() => setShowAllDays(false)}
