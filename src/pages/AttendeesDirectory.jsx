@@ -28,7 +28,7 @@ const AttendeesDirectory = () => {
   useEffect(() => {
     setFilteredAttendees(
       attendees.filter((attendee) =>
-        attendee.name.toLowerCase().includes(searchTerm.toLowerCase())
+        attendee?.name?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
   }, [searchTerm, attendees]);

@@ -201,7 +201,10 @@ function DashboardContent() {
 
         {/* New Meeting Modal */}
         {isNewMeetingOpen && (
-          <NewMeetingModal onClose={handleCloseNewMeetingModal} />
+          <NewMeetingModal
+            isOpen={isNewMeetingOpen}
+            closeModal={handleCloseNewMeetingModal}
+          />
         )}
 
         {/* Upcoming Meetings and Notifications */}

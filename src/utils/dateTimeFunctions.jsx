@@ -29,11 +29,15 @@ export function formatTime2(time, format = "HH:mm") {
 }
 
 // Helper function to convert Base64 to Blob
-export function base64ToBlob(base64Data, contentType = "image/png") {
-  const byteCharacters = atob(base64Data.split(",")[1]); // Extract image data
-  const byteNumbers = new Array(byteCharacters.length)
-    .fill()
-    .map((_, i) => byteCharacters.charCodeAt(i));
-  const byteArray = new Uint8Array(byteNumbers);
-  return new Blob([byteArray], { type: contentType });
+export function base64ToBlob(base64, contentType) {
+  const byteCharacters = atob(base64.split(",")[1]);
+  const byteArrays = [];
+  for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+    const slice = byteCharacters.slice(offset, offset + 512);
+    const byteNumbers = new Array(slice.length)
+      .fill()
+      .map((_, i) => slice.charCodeAt(i));
+    byteArrays.push(new Uint8Array(byteNumbers));
+  }
+  return new Blob(byteArrays, { type: contentType });
 }

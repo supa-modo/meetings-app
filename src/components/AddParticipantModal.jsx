@@ -25,6 +25,7 @@ const AddParticipantModal = ({
   const [signatureDataURL, setSignatureDataURL] = useState("");
 
   const [formData, setFormData] = useState({
+    attendeeId: "",
     name: "",
     email: "",
     phone: "",
@@ -75,8 +76,8 @@ const AddParticipantModal = ({
     if (query) {
       const results = attendees.filter(
         (attendee) =>
-          attendee.name.toLowerCase().includes(query.toLowerCase()) ||
-          attendee.email.toLowerCase().includes(query.toLowerCase())
+          attendee?.name?.toLowerCase().includes(query.toLowerCase()) ||
+          attendee?.email?.toLowerCase().includes(query.toLowerCase())
       );
       setFilteredResults(results);
     } else {
@@ -115,12 +116,66 @@ const AddParticipantModal = ({
       // Update formData with the Blob
       setFormData((prevData) => ({
         ...prevData,
-        signature: blob, // Store the Blob directly in formData.signature
+        signature: blob,
       }));
 
       setSignatureDataURL(signatureURL); // Save for participantData if needed
     } else {
       console.log("Signature pad is empty");
+    }
+  };
+
+  const attendeeCheck = async () => {
+    let attendeeId;
+
+    // Check if the attendee already exists
+    const checkResponse = await axios.get("/attendees/checkAttendee", {
+      params: {
+        name: formData.name,
+        email: formData.email,
+      },
+    });
+
+    if (checkResponse.data.exists) {
+      attendeeId = checkResponse.data.attendeeId;
+      setFormData((prevData) => ({
+        ...prevData,
+        attendeeId: attendeeId,
+      }));
+      console.log("Existing Attendee ID:", attendeeId);
+
+      const checkParticipant = await axios.get(
+        `/participation/checkParticipant`,
+
+        {
+          params: {
+            attendeeId,
+            meetingId,
+          },
+        }
+      );
+
+      if (checkParticipant.data.exists) {
+        setModalNotificationMessage(
+          "This participant is already in the attendance list. Find the name from the attendance list on the table to add your signature"
+        );
+        setModalNotificationType("error");
+        setShowNotificationModal(true);
+        return;
+      }
+    } else {
+      // Add attendee
+      const addAttendeeResponse = await axios.post(
+        "/attendees/createAttendee",
+        formData
+      );
+      attendeeId = addAttendeeResponse.data.attendeeId;
+      setFormData((prevData) => ({
+        ...prevData,
+        attendeeId: attendeeId,
+      }));
+
+      console.log("New Attendee ID:", attendeeId);
     }
   };
 
@@ -141,6 +196,7 @@ const AddParticipantModal = ({
     participantData.append("title", formData.title);
     participantData.append("attendeeName", formData.name); // Needed for file naming
     participantData.append("meetingId", meetingId); // Make sure meetingId is passed correctly
+    participantData.append("attendeeId", formData.attendeeId); // Make sure meetingId is passed correctly
     participantData.append("meetingDate", meetingStartDate); // Format this correctly
     participantData.append("meetingRole", formData.meetingRole);
     participantData.append(
@@ -150,55 +206,16 @@ const AddParticipantModal = ({
     ); // Signature Blob
 
     try {
-      let attendeeId;
-
-      // Check if the attendee already exists
-      const checkResponse = await axios.get("/attendees/checkAttendee", {
-        params: {
-          name: formData.name,
-          email: formData.email,
-        },
-      });
-
-      if (checkResponse.data.exists) {
-        attendeeId = checkResponse.data.attendeeId;
-        console.log("Existing Attendee ID:", attendeeId);
-
-        const checkParticipant = await axios.get(
-          `/participation/checkParticipant`,
-
-          {
-            params: {
-              attendeeId,
-              meetingId,
-            },
-          }
-        );
-
-        if (checkParticipant.data.exists) {
-          setModalNotificationMessage(
-            "This participant is already in the attendance list. Find the name from the attendance list on the table to add your signature"
-          );
-          setModalNotificationType("error");
-          setShowNotificationModal(true);
-          return;
-        }
-      } else {
-        // Add attendee
-        const addAttendeeResponse = await axios.post(
-          "/attendees/createAttendee",
-          participantData
-        );
-        attendeeId = addAttendeeResponse.data.attendeeId;
-        console.log("New Attendee ID:", attendeeId);
-      }
-
-      participantData.append("attendeeId", attendeeId);
       console.log(participantData);
 
       const addParticipationResponse = await axios.post(
         "/participation/recordParticipation",
-        participantData
+        participantData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Ensuring correct content type
+          },
+        }
       );
 
       if (addParticipationResponse.data.success === true) {
@@ -211,6 +228,7 @@ const AddParticipantModal = ({
 
         // Clear the form
         setFormData({
+          attendeeId: "",
           name: "",
           email: "",
           phone: "",
@@ -385,7 +403,8 @@ const AddParticipantModal = ({
           <button
             onClick={() => {
               handleSaveSignature();
-              setTimeout(handleAddParticipant, 100);
+              setTimeout(attendeeCheck, 1000);
+              setTimeout(handleAddParticipant, 2000);
             }}
             className="mt-4 bg-blue-500 font-semibold text-white px-8 py-2 rounded-sm"
           >
