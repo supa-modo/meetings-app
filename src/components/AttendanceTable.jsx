@@ -1,9 +1,49 @@
 import { React, useState } from "react";
 import axios from "../utils/axios";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const AttendanceTable = ({ meetingDays, attendees }) => {
   const [showAllDays, setShowAllDays] = useState(false);
   const backend_Url = "http://localhost:3500";
+
+  const generatePDF = () => {
+    const doc = new jsPDF({ orientation: "landscape" });
+    const tableColumn = [
+      "#",
+      "Participant Name",
+      "Email",
+      "Phone",
+      "Organization",
+      ...meetingDays.map((_, index) => `Day ${index + 1}`),
+    ];
+    const tableRows = [];
+
+    attendees.forEach((attendee, index) => {
+      const rowData = [
+        index + 1,
+        attendee.Attendee?.name || "N/A",
+        attendee.Attendee?.email || "N/A",
+        attendee.Attendee?.phone || "N/A",
+        attendee.Attendee?.organization || "N/A",
+        ...meetingDays.map(() =>
+          attendee.signature ? "Signed" : "Not Signed"
+        ),
+      ];
+      tableRows.push(rowData);
+    });
+
+    doc.setFontSize(18);
+    doc.text("Attendance List", 14, 20);
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30,
+      styles: { fontSize: 10 },
+    });
+
+    doc.save("Attendance_List.pdf");
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -81,6 +121,15 @@ const AttendanceTable = ({ meetingDays, attendees }) => {
           ))}
         </tbody>
       </table>
+
+      <div className="flex justify-start my-4">
+        <button
+          onClick={() => generatePDF()}
+          className="bg-blue-500 text-white font-semibold px-10 py-2 rounded hover:bg-blue-700 transition"
+        >
+          Download Attendance List
+        </button>
+      </div>
 
       {/* Modal to display all days with signatures */}
       {showAllDays && (

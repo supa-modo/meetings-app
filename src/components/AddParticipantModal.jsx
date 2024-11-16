@@ -11,7 +11,7 @@ const AddParticipantModal = ({
   meetingStartDate,
   showAddModal,
   setShowAddModal,
-  onSuccess,
+  // onSuccess,
 }) => {
   if (!showAddModal) return null;
 
@@ -123,6 +123,11 @@ const AddParticipantModal = ({
       formDataWithSignature.append("meetingRole", formData.meetingRole);
       formDataWithSignature.append("signature", signatureBlob, "signature.png");
 
+      const isAttendeeValid = await attendeeCheck();
+      if (!isAttendeeValid) {
+        return; // Stop the function if attendee already exists
+      }
+
       try {
         const addParticipationResponse = await axios.post(
           "/participation/recordParticipation",
@@ -132,11 +137,15 @@ const AddParticipantModal = ({
 
         if (addParticipationResponse.data.success === true) {
           setModalNotificationMessage(
-            "Your meeting attendance has been recorded successfully. Kindly pass the device to the next person. Thank you"
+            <>
+              {formData.name} - {formData.email} - {formData.organization}
+              <br />
+              Your meeting attendance has been recorded successfully. Kindly
+              pass the device to the next person. Thank you
+            </>
           );
           setModalNotificationType("success");
           setShowNotificationModal(true);
-          onSuccess();
           setIsLoading(false);
 
           // Clear the form
@@ -185,132 +194,62 @@ const AddParticipantModal = ({
     return new Blob(byteArrays, { type: contentType });
   }
 
-  // Handle drawing signature
-  // const [sigPad, setSigPad] = useState({});
-  // const handleClearSignature = () => sigPad.clear();
-
-  // const handleSaveSignature = async () => {
-  //   if (!sigPad.isEmpty()) {
-  //     // setSignatureDataURL(
-  //     //   (signatureDataURL = sigPad.getTrimmedCanvas().toDataURL("image/png"))
-  //     // );
-  //     console.log(
-  //       "Signature saved:",
-  //       sigPad.getTrimmedCanvas().toDataURL("image/png")
-  //     );
-
-  //     // Update formData with the Base64 signature URL
-  //     setFormData((prevData) => ({
-  //       ...prevData,
-  //       signature: sigPad.getTrimmedCanvas().toDataURL("image/png"),
-  //     }));
-  //     console.log(formData);
-  //   } else {
-  //     console.log("Signature pad is empty");
-  //   }
-  // };
-
-  //Checking if the participant is already in the database and updating or in the attendance list and updating
+  // Checking if the participant is already in the database and attendance list
   const attendeeCheck = async () => {
-    let attendeeId;
-    // Check if the attendee already exists
-    const checkResponse = await axios.get("/attendees/checkAttendee", {
-      params: {
-        name: formData.name,
-        email: formData.email,
-      },
-    });
+    try {
+      let attendeeId;
+      // Check if the attendee already exists
+      const checkResponse = await axios.get("/attendees/checkAttendee", {
+        params: {
+          name: formData.name,
+          email: formData.email,
+        },
+      });
 
-    if (checkResponse.data.exists) {
-      attendeeId = checkResponse.data.attendeeId;
-      console.log("Existing Attendee ID:", attendeeId);
+      if (checkResponse.data.exists) {
+        attendeeId = checkResponse.data.attendeeId;
+        console.log("Existing Attendee ID:", attendeeId);
 
-      const checkParticipant = await axios.get(
-        `/participation/checkParticipant`,
-
-        {
-          params: {
-            attendeeId,
-            meetingId,
-          },
-        }
-      );
-
-      if (checkParticipant.data.exists) {
-        setModalNotificationMessage(
-          "This participant is already in the attendance list. Find the name from the attendance list on the table to add your signature"
+        const checkParticipant = await axios.get(
+          "/participation/checkParticipant",
+          {
+            params: {
+              attendeeId,
+              meetingId,
+            },
+          }
         );
-        setModalNotificationType("error");
-        setShowNotificationModal(true);
-        setIsLoading(false);
-        return;
+
+        if (checkParticipant.data.exists) {
+          setModalNotificationMessage(
+            "This participant is already in the attendance list. Find the name from the attendance list on the table to add your signature."
+          );
+          setModalNotificationType("error");
+          setShowNotificationModal(true);
+          setIsLoading(false);
+          return false;
+        }
+      } else {
+        // Add attendee
+        const addAttendeeResponse = await axios.post(
+          "/attendees/createAttendee",
+          formData
+        );
+        attendeeId = addAttendeeResponse.data.attendeeId;
+        console.log("New Attendee ID:", attendeeId);
       }
-    } else {
-      // Add attendee
-      const addAttendeeResponse = await axios.post(
-        "/attendees/createAttendee",
-        formData
+      return true;
+    } catch (error) {
+      console.error("Error checking attendee:", error);
+      setModalNotificationMessage(
+        "Failed to check attendee. Please try again."
       );
-
-      attendeeId = addAttendeeResponse.data.attendeeId;
-
-      console.log("New Attendee ID:", attendeeId);
+      setModalNotificationType("error");
+      setShowNotificationModal(true);
+      setIsLoading(false);
+      return false;
     }
   };
-
-  // const handleAddParticipant = async () => {
-  //   const participantData = {
-  //     name: formData.name,
-  //     email: formData.email,
-  //     phone: formData.phone,
-  //     organization: formData.organization,
-  //     title: formData.title,
-  //     attendeeName: formData.name, // Needed for file naming
-  //     meetingId, // Make sure meetingId is passed correctly
-  //     meetingDate: meetingStartDate, // Format this correctly
-  //     meetingRole: formData.meetingRole,
-  //     signature: formData.signature, // Base64 string
-  //   };
-
-  //   try {
-  //     console.log(participantData);
-
-  //     const addParticipationResponse = await axios.post(
-  //       "/participation/recordParticipation",
-  //       participantData
-  //     );
-
-  //     if (addParticipationResponse.data.success === true) {
-  //       setModalNotificationMessage(
-  //         "Your meeting attendance has been recorded successfully. Kindly pass the device to the next person. Thank you"
-  //       );
-  //       setModalNotificationType("success");
-  //       setShowNotificationModal(true);
-  //       onSuccess();
-  //       setIsLoading(false);
-
-  //       // Clear the form
-  //       setFormData({
-  //         name: "",
-  //         email: "",
-  //         phone: "",
-  //         organization: "",
-  //         title: "",
-  //         meetingRole: "participant",
-  //         signature: "",
-  //       });
-  //       sigPad.clear();
-  //     }
-  //   } catch (error) {
-  //     console.error("Error recording attendance:", error);
-  //     setModalNotificationMessage(
-  //       "Failed to record attendance. Please try again."
-  //     );
-  //     setModalNotificationType("error");
-  //     setShowNotificationModal(true);
-  //     setIsLoading(false);
-  //   }
-  // };
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex justify-center items-center z-50 transition duration-300">
@@ -467,10 +406,8 @@ const AddParticipantModal = ({
             isLoading={isLoading}
             onClick={() => {
               setIsLoading(true);
-              setTimeout(attendeeCheck, 2000);
-              setTimeout(handleSaveSignature, 4000);
-
-              // setTimeout(handleAddParticipant, 5000);
+              // setTimeout(attendeeCheck, 1000);
+              setTimeout(handleSaveSignature, 2000);
             }}
           />
         </div>

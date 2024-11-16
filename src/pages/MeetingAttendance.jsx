@@ -268,7 +268,7 @@ const MeetingAttendance = () => {
           meetingStartDate={meetingStartDate}
           showAddModal={showAddModal}
           setShowAddModal={setShowAddModal}
-          onSuccess={() => setShowAddModal(false)}
+          // onSuccess={() => setShowAddModal(false)}
         />
 
         <NotificationModal
