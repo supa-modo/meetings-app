@@ -86,7 +86,7 @@ const AddParticipantModal = ({
     }
   };
 
-  //finction to click on one of the results from the search list
+  //function to click on one of the results from the search list
   const handleResultClick = (attendee) => {
     setSelectedResult(attendee);
     setSearchQuery("");
@@ -101,30 +101,114 @@ const AddParticipantModal = ({
     });
   };
 
-  // Handle drawing signature
   const [sigPad, setSigPad] = useState({});
   const handleClearSignature = () => sigPad.clear();
-
   const handleSaveSignature = async () => {
     if (!sigPad.isEmpty()) {
-      // setSignatureDataURL(
-      //   (signatureDataURL = sigPad.getTrimmedCanvas().toDataURL("image/png"))
-      // );
-      console.log(
-        "Signature saved:",
-        sigPad.getTrimmedCanvas().toDataURL("image/png")
-      );
+      const signatureBase64 = sigPad.getTrimmedCanvas().toDataURL("image/png");
+      console.log("Signature saved:", signatureBase64);
 
-      // Update formData with the Base64 signature URL
-      setFormData((prevData) => ({
-        ...prevData,
-        signature: sigPad.getTrimmedCanvas().toDataURL("image/png"),
-      }));
-      console.log(formData);
+      // Convert base64 to Blob
+      const signatureBlob = base64ToBlob(signatureBase64, "image/png");
+
+      // Create a FormData object
+      const formDataWithSignature = new FormData();
+      formDataWithSignature.append("name", formData.name);
+      formDataWithSignature.append("meetingId", meetingId);
+      formDataWithSignature.append("meetingDate", meetingStartDate);
+      formDataWithSignature.append("email", formData.email);
+      formDataWithSignature.append("phone", formData.phone);
+      formDataWithSignature.append("organization", formData.organization);
+      formDataWithSignature.append("title", formData.title);
+      formDataWithSignature.append("meetingRole", formData.meetingRole);
+      formDataWithSignature.append("signature", signatureBlob, "signature.png");
+
+      try {
+        const addParticipationResponse = await axios.post(
+          "/participation/recordParticipation",
+          formDataWithSignature,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+
+        if (addParticipationResponse.data.success === true) {
+          setModalNotificationMessage(
+            "Your meeting attendance has been recorded successfully. Kindly pass the device to the next person. Thank you"
+          );
+          setModalNotificationType("success");
+          setShowNotificationModal(true);
+          onSuccess();
+          setIsLoading(false);
+
+          // Clear the form
+          setFormData({
+            name: "",
+            email: "",
+            phone: "",
+            organization: "",
+            title: "",
+            meetingRole: "participant",
+            signature: "",
+          });
+          sigPad.clear();
+        }
+      } catch (error) {
+        console.error("Error recording attendance:", error);
+        setModalNotificationMessage(
+          "Failed to record attendance. Please try again."
+        );
+        setModalNotificationType("error");
+        setShowNotificationModal(true);
+        setIsLoading(false);
+      }
     } else {
       console.log("Signature pad is empty");
     }
   };
+
+  // Utility to convert base64 to Blob
+  function base64ToBlob(base64Data, contentType = "") {
+    const byteCharacters = atob(base64Data.split(",")[1]);
+    const byteArrays = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
+      const slice = byteCharacters.slice(offset, offset + 1024);
+      const byteNumbers = new Array(slice.length);
+
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+
+    return new Blob(byteArrays, { type: contentType });
+  }
+
+  // Handle drawing signature
+  // const [sigPad, setSigPad] = useState({});
+  // const handleClearSignature = () => sigPad.clear();
+
+  // const handleSaveSignature = async () => {
+  //   if (!sigPad.isEmpty()) {
+  //     // setSignatureDataURL(
+  //     //   (signatureDataURL = sigPad.getTrimmedCanvas().toDataURL("image/png"))
+  //     // );
+  //     console.log(
+  //       "Signature saved:",
+  //       sigPad.getTrimmedCanvas().toDataURL("image/png")
+  //     );
+
+  //     // Update formData with the Base64 signature URL
+  //     setFormData((prevData) => ({
+  //       ...prevData,
+  //       signature: sigPad.getTrimmedCanvas().toDataURL("image/png"),
+  //     }));
+  //     console.log(formData);
+  //   } else {
+  //     console.log("Signature pad is empty");
+  //   }
+  // };
 
   //Checking if the participant is already in the database and updating or in the attendance list and updating
   const attendeeCheck = async () => {
@@ -141,28 +225,26 @@ const AddParticipantModal = ({
       attendeeId = checkResponse.data.attendeeId;
       console.log("Existing Attendee ID:", attendeeId);
 
-      setTimeout(async () => {
-        const checkParticipant = await axios.get(
-          `/participation/checkParticipant`,
+      const checkParticipant = await axios.get(
+        `/participation/checkParticipant`,
 
-          {
-            params: {
-              attendeeId,
-              meetingId,
-            },
-          }
-        );
-
-        if (checkParticipant.data.exists) {
-          setModalNotificationMessage(
-            "This participant is already in the attendance list. Find the name from the attendance list on the table to add your signature"
-          );
-          setModalNotificationType("error");
-          setShowNotificationModal(true);
-          setIsLoading(false);
-          return;
+        {
+          params: {
+            attendeeId,
+            meetingId,
+          },
         }
-      }, 3000);
+      );
+
+      if (checkParticipant.data.exists) {
+        setModalNotificationMessage(
+          "This participant is already in the attendance list. Find the name from the attendance list on the table to add your signature"
+        );
+        setModalNotificationType("error");
+        setShowNotificationModal(true);
+        setIsLoading(false);
+        return;
+      }
     } else {
       // Add attendee
       const addAttendeeResponse = await axios.post(
@@ -176,59 +258,59 @@ const AddParticipantModal = ({
     }
   };
 
-  const handleAddParticipant = async () => {
-    const participantData = {
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      organization: formData.organization,
-      title: formData.title,
-      attendeeName: formData.name, // Needed for file naming
-      meetingId, // Make sure meetingId is passed correctly
-      meetingDate: meetingStartDate, // Format this correctly
-      meetingRole: formData.meetingRole,
-      signature: formData.signature, // Base64 string
-    };
+  // const handleAddParticipant = async () => {
+  //   const participantData = {
+  //     name: formData.name,
+  //     email: formData.email,
+  //     phone: formData.phone,
+  //     organization: formData.organization,
+  //     title: formData.title,
+  //     attendeeName: formData.name, // Needed for file naming
+  //     meetingId, // Make sure meetingId is passed correctly
+  //     meetingDate: meetingStartDate, // Format this correctly
+  //     meetingRole: formData.meetingRole,
+  //     signature: formData.signature, // Base64 string
+  //   };
 
-    try {
-      console.log(participantData);
+  //   try {
+  //     console.log(participantData);
 
-      const addParticipationResponse = await axios.post(
-        "/participation/recordParticipation",
-        participantData
-      );
+  //     const addParticipationResponse = await axios.post(
+  //       "/participation/recordParticipation",
+  //       participantData
+  //     );
 
-      if (addParticipationResponse.data.success === true) {
-        setModalNotificationMessage(
-          "Your meeting attendance has been recorded successfully. Kindly pass the device to the next person. Thank you"
-        );
-        setModalNotificationType("success");
-        setShowNotificationModal(true);
-        onSuccess();
-        setIsLoading(false);
+  //     if (addParticipationResponse.data.success === true) {
+  //       setModalNotificationMessage(
+  //         "Your meeting attendance has been recorded successfully. Kindly pass the device to the next person. Thank you"
+  //       );
+  //       setModalNotificationType("success");
+  //       setShowNotificationModal(true);
+  //       onSuccess();
+  //       setIsLoading(false);
 
-        // Clear the form
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          organization: "",
-          title: "",
-          meetingRole: "participant",
-          signature: "",
-        });
-        sigPad.clear();
-      }
-    } catch (error) {
-      console.error("Error recording attendance:", error);
-      setModalNotificationMessage(
-        "Failed to record attendance. Please try again."
-      );
-      setModalNotificationType("error");
-      setShowNotificationModal(true);
-      setIsLoading(false);
-    }
-  };
+  //       // Clear the form
+  //       setFormData({
+  //         name: "",
+  //         email: "",
+  //         phone: "",
+  //         organization: "",
+  //         title: "",
+  //         meetingRole: "participant",
+  //         signature: "",
+  //       });
+  //       sigPad.clear();
+  //     }
+  //   } catch (error) {
+  //     console.error("Error recording attendance:", error);
+  //     setModalNotificationMessage(
+  //       "Failed to record attendance. Please try again."
+  //     );
+  //     setModalNotificationType("error");
+  //     setShowNotificationModal(true);
+  //     setIsLoading(false);
+  //   }
+  // };
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex justify-center items-center z-50 transition duration-300">
@@ -385,21 +467,12 @@ const AddParticipantModal = ({
             isLoading={isLoading}
             onClick={() => {
               setIsLoading(true);
-              setTimeout(handleSaveSignature, 2000);
               setTimeout(attendeeCheck, 2000);
-              setTimeout(handleAddParticipant, 5000);
+              setTimeout(handleSaveSignature, 4000);
+
+              // setTimeout(handleAddParticipant, 5000);
             }}
           />
-          {/* <button
-            onClick={() => {
-              handleSaveSignature();
-              setTimeout(attendeeCheck, 1000);
-              setTimeout(handleAddParticipant, 4000);
-            }}
-            className="mt-4 bg-blue-500 font-semibold text-white px-8 py-2 rounded-sm"
-          >
-            Submit Attendance
-          </button> */}
         </div>
       </div>
 
