@@ -26,7 +26,7 @@ const getMeetingDays = (startDate, endDate) => {
 };
 
 const MeetingAttendance = () => {
-  const { meetingID } = useParams(); // Extract the meeting ID from the URL parameters
+  const { meetingID, meetingDate } = useParams(); 
   const navigate = useNavigate();
   const [meetingDetails, setMeetingDetails] = useState(null);
   const [attendees, setAttendees] = useState([]);
@@ -76,7 +76,7 @@ const MeetingAttendance = () => {
   const fetchParticipants = async () => {
     try {
       const response = await axios.get(
-        `/participation/getParticipationByMeeting/${meetingID}`
+        `/participation/getParticipationByMeeting/${meetingID}/${meetingDate}`
       );
       const participantsData = response.data;
 

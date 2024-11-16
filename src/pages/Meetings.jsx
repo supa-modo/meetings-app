@@ -190,7 +190,9 @@ const MeetingsPage = () => {
               <MeetingCard
                 key={meeting.id}
                 meeting={meeting}
-                onClick={() => navigate(`/meetings/${meeting.id}`)}
+                onClick={() =>
+                  navigate(`/meetings/${meeting.id}/${meeting.startDate}`)
+                }
               />
             ))}
           </div>
@@ -259,7 +261,9 @@ const MeetingsPage = () => {
                   className={`pl-2 py-3 ${
                     index % 2 === 0 ? "bg-gray-100" : "bg-amber-50"
                   } cursor-pointer hover:bg-gray-300 hover:shadow-md transition duration-200 font-semibold text-gray-600`}
-                  onClick={() => navigate(`/meetings/${meeting.id}`)}
+                  onClick={() =>
+                    navigate(`/meetings/${meeting.id}/${meeting.startDate}`)
+                  }
                 >
                   <td className="pl-3">{meeting.id}</td>
                   <td className="pl-2 py-3 text-gray-700 max-w-[260px] truncate">

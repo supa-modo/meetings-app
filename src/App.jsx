@@ -15,7 +15,7 @@ function App() {
         <Route path="/meetings" element={<MeetingsPage />} />
         <Route path="/directory" element={<AttendeesDirectory />} />
         {/* Route for a specific Meeting Management */}
-        <Route path="/meetings/:meetingID" element={<MeetingAttendance />} />
+        <Route path="/meetings/:meetingID/:meetingDate" element={<MeetingAttendance />} />
         <Route path="/reports/" element={<ReportsScreen />} />
       </Routes>
     </Router>

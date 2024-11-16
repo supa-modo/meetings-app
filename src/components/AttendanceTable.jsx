@@ -3,6 +3,7 @@ import axios from "../utils/axios";
 
 const AttendanceTable = ({ meetingDays, attendees }) => {
   const [showAllDays, setShowAllDays] = useState(false);
+  const backend_Url = "http://localhost:3500";
 
   return (
     <div className="overflow-x-auto">
@@ -62,21 +63,18 @@ const AttendanceTable = ({ meetingDays, attendees }) => {
                 {attendee.Attendee ? attendee.Attendee.organization : "N/A"}
               </td>
 
-              {/* Display signatures for the first 6 days */}
-              {meetingDays.slice(0, 6).map((_, dayIndex) => (
-                <td
-                  key={dayIndex}
-                  className="p-3 italic text-sm text-blue-500 text-center"
-                >
-                  {/* {attendee.signatures[`day${dayIndex + 1}`] ? (
+              {/* Display signatures for the first 5 days */}
+              {meetingDays.slice(0, 6).map((day, dayIndex) => (
+                <td key={dayIndex} className="p-3 text-center">
+                  {attendee.signature ? (
                     <img
-                      src={attendee.signatures[`day${dayIndex + 1}`]}
-                      alt={`Day ${dayIndex + 1} Signature`}
-                      className="h-8 mx-auto"
+                      src={`${backend_Url}${attendee.signature}`}
+                      alt={`${day}`}
+                      className="h-8 max-w-[100px] mx-auto line-clamp-1 truncate"
                     />
-                  ) : ( */}
-                  "Not Signed"
-                  {/* )} */}
+                  ) : (
+                    "Not Signed"
+                  )}
                 </td>
               ))}
             </tr>
@@ -125,19 +123,16 @@ const AttendanceTable = ({ meetingDays, attendees }) => {
                     </td>
 
                     {meetingDays.map((_, dayIndex) => (
-                      <td
-                        key={dayIndex}
-                        className="p-3 text-center italic text-sm text-blue-500"
-                      >
-                        {/* {attendee.signatures[`day${dayIndex + 1}`] ? (
+                      <td key={dayIndex} className="p-3 text-center">
+                        {attendee.signature ? (
                           <img
-                            src={attendee.signatures[`day${dayIndex + 1}`]}
-                            alt={`Day ${dayIndex + 1} Signature`}
-                            className="h-8 mx-auto"
+                            src={`${backend_Url}${attendee.signature}`}
+                            alt={`signature`}
+                            className="h-8 max-w-[100px] mx-auto line-clamp-1 truncate"
                           />
-                        ) : ( */}
-                        "Not Signed"
-                        {/* )} */}
+                        ) : (
+                          "Not Signed"
+                        )}
                       </td>
                     ))}
                   </tr>
