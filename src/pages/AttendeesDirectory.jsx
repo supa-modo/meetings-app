@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import ViewAttendeeModal from "../components/ViewAttendeeModal";
 import AddAttendeeModal from "../components/AddAttendeeModal";
 import EditAttendeeModal from "../components/EditAttendeeModal";
-import NotificationModal from "../components/NotificationModal"; // Import NotificationModal
+import NotificationModal from "../components/NotificationModal";
 import { FaPlus, FaTrash, FaEdit, FaSearch, FaTimes } from "react-icons/fa";
-import axios from "../utils/axios"; // Import Axios instance
+import axios from "../utils/axios"; 
 import Header from "../components/Header";
 import NavBar from "../components/Navbar";
 

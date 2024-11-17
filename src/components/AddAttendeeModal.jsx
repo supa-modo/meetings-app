@@ -103,7 +103,7 @@ const AddAttendeeModal = ({ onAddAttendee, onClose }) => {
             >
               <div className="flex items-center">
                 <IoMdPersonAdd size={20} className="mr-4" />
-                <span>Add New Participant</span>
+                <span>Add New Attendee</span>
               </div>
             </button>
           </div>

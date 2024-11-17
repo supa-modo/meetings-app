@@ -317,7 +317,7 @@ const AddParticipantModal = ({
           ) : searchQuery && filteredResults.length === 0 ? (
             <div className="absolute left-10 right-10 text-center font-semibold bg-gray-200 border border-gray-300 rounded-sm shadow-lg z-10 p-4 text-red-500">
               Name or email entered not found in the database!! Fill your
-              details below to be added in the system
+              details below to be added into the system
             </div>
           ) : null}
         </div>

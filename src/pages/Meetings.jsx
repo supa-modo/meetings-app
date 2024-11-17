@@ -22,6 +22,35 @@ const MeetingsPage = () => {
   const [modalNotificationMessage, setModalNotificationMessage] = useState(""); // For error/success messages
   const [modalNotificationType, setModalNotificationType] = useState(""); // "success" or "error"
   const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [attendeeCounts, setAttendeeCounts] = useState({});
+
+  //Function to count the number of paticipants in a meeting
+  const fetchAttendeeCounts = async (meetings) => {
+    const counts = await Promise.all(
+      meetings.map(async (meeting) => {
+        try {
+          const response = await axios.get(
+            `/participation/count/${meeting.id}`
+          );
+          return {
+            meetingId: meeting.id,
+            count: response.data.participantCount,
+          };
+        } catch (error) {
+          console.error(
+            `Error fetching count for meeting ${meeting.id}:`,
+            error
+          );
+          return { meetingId: meeting.id, count: 0 }; // Default to 0 on error
+        }
+      })
+    );
+
+    return counts.reduce((acc, { meetingId, count }) => {
+      acc[meetingId] = count;
+      return acc;
+    }, {});
+  };
 
   useEffect(() => {
     fetchMeetings();
@@ -43,6 +72,9 @@ const MeetingsPage = () => {
     try {
       const response = await axios.get("/meetings/getAllMeetings");
       setMeetings(response.data);
+      // Fetch attendee counts
+      const counts = await fetchAttendeeCounts(response.data);
+      setAttendeeCounts(counts);
     } catch (error) {
       console.error(
         "Error fetching attendees, Please check your internet connection"
@@ -291,7 +323,7 @@ const MeetingsPage = () => {
                   </td>
                   <td className="pl-2 py-3">{meeting.type}</td>
                   <td className="pl-2 py-3 font-semibold text-center">
-                    {meeting.attended || "--"}
+                    {attendeeCounts[meeting.id] ?? "--"}
                   </td>
 
                   <td className="pr-3 py-3 text-center flex items-center max-w-[150px] space-x-3">

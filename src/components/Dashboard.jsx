@@ -124,7 +124,7 @@ function DashboardContent() {
                 meetings[selectedDate].map((meeting, index) => (
                   <div
                     key={index}
-                    className="meeting-card px-3 py-[6px] flex justify-between items-center mb-3"
+                    className="meeting-card transition-transform duration-200 ease-in-out hover:-translate-x-1  cursor-pointer px-3 py-[6px] flex justify-between items-center mb-3"
                   >
                     <div>
                       <p className="text-gray-600 font-semibold">
