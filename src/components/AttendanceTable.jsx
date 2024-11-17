@@ -31,6 +31,7 @@ const AttendanceTable = ({ meetingDays, attendees }) => {
         ),
       ];
       tableRows.push(rowData);
+      console.log(`${backend_Url}${attendee.signature}`)
     });
 
     doc.setFontSize(18);
@@ -107,9 +108,10 @@ const AttendanceTable = ({ meetingDays, attendees }) => {
               {meetingDays.slice(0, 6).map((day, dayIndex) => (
                 <td key={dayIndex} className="p-3 text-center">
                   {attendee.signature ? (
+                    
                     <img
                       src={`${backend_Url}${attendee.signature}`}
-                      alt={`${day}`}
+                      alt={`Not Signed`}
                       className="h-8 max-w-[100px] mx-auto line-clamp-1 truncate"
                     />
                   ) : (
@@ -176,7 +178,7 @@ const AttendanceTable = ({ meetingDays, attendees }) => {
                         {attendee.signature ? (
                           <img
                             src={`${backend_Url}${attendee.signature}`}
-                            alt={`signature`}
+                            alt={`Not Signed`}
                             className="h-8 max-w-[100px] mx-auto line-clamp-1 truncate"
                           />
                         ) : (

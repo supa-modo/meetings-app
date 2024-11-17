@@ -104,7 +104,11 @@ const AddParticipantModal = ({
   const [sigPad, setSigPad] = useState({});
   const handleClearSignature = () => sigPad.clear();
   const handleSaveSignature = async () => {
-    if (!sigPad.isEmpty()) {
+    if (
+      !sigPad.isEmpty() ||
+      !formData.name.isEmpty() ||
+      !formData.email.isEmpty()
+    ) {
       const signatureBase64 = sigPad.getTrimmedCanvas().toDataURL("image/png");
       console.log("Signature saved:", signatureBase64);
 
@@ -171,6 +175,12 @@ const AddParticipantModal = ({
       }
     } else {
       console.log("Signature pad is empty");
+      setModalNotificationMessage(
+        "You need to fill in all the fields and add signature to continue. Please try again."
+      );
+      setModalNotificationType("error");
+      setShowNotificationModal(true);
+      setIsLoading(false);
     }
   };
 
@@ -278,7 +288,7 @@ const AddParticipantModal = ({
               name="search"
               value={searchQuery}
               onChange={handleSearchChange}
-              placeholder="Search your name or email and select from the list results"
+              placeholder="Search for your name or email and select from the listed results"
               className="bg-transparent focus:outline-none pl-2 w-full text-gray-700 font-semibold"
             />
             {searchQuery && (
@@ -305,8 +315,9 @@ const AddParticipantModal = ({
               ))}
             </div>
           ) : searchQuery && filteredResults.length === 0 ? (
-            <div className="absolute left-10 right-10 text-center bg-gray-200 border border-gray-300 rounded-sm shadow-lg z-10 p-4 text-gray-600">
-              Name or email not found in the database
+            <div className="absolute left-10 right-10 text-center font-semibold bg-gray-200 border border-gray-300 rounded-sm shadow-lg z-10 p-4 text-red-500">
+              Name or email entered not found in the database!! Fill your
+              details below to be added in the system
             </div>
           ) : null}
         </div>
@@ -317,12 +328,14 @@ const AddParticipantModal = ({
           </p>
         ) : (
           <p className="font-semibold mb-4">
-            If not found, enter your details below:
+            If not found, enter your details below to record attendance and add
+            details to database
           </p>
         )}
 
         <div className="flex">
           {/* Form Fields */}
+
           <div className="w-1/2 mr-10 font-semibold">
             <input
               type="text"
@@ -331,6 +344,7 @@ const AddParticipantModal = ({
               value={formData.name}
               onChange={handleChange}
               className="w-full mb-4 pl-5 p-3 border border-gray-300sm "
+              required
             />
             <input
               type="email"
@@ -339,6 +353,7 @@ const AddParticipantModal = ({
               value={formData.email}
               onChange={handleChange}
               className="w-full mb-4 pl-5 p-3 border border-gray-300sm"
+              required
             />
             <input
               type="text"
@@ -347,6 +362,7 @@ const AddParticipantModal = ({
               value={formData.phone}
               onChange={handleChange}
               className="w-full mb-4 pl-5 p-3 border border-gray-300sm"
+              required
             />
             <input
               type="text"
@@ -355,6 +371,7 @@ const AddParticipantModal = ({
               value={formData.organization}
               onChange={handleChange}
               className="w-full mb-4 pl-5 p-3 border border-gray-300sm"
+              required
             />
             <input
               type="text"
@@ -363,6 +380,7 @@ const AddParticipantModal = ({
               value={formData.title}
               onChange={handleChange}
               className="w-full mb-4 pl-5 p-3 border border-gray-300sm"
+              required
             />
           </div>
 
