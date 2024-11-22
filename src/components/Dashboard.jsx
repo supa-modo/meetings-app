@@ -13,40 +13,36 @@ import "../assets/DashboardContent.css";
 import { MdOutlineClearAll } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import NewMeetingModal from "./AddMeetingModal";
-import meetingsData from "../data/meetings.json";
 import AddAttendeeModal from "./AddAttendeeModal";
+import axios from "../utils/axios";
+import { formatTime } from "../utils/dateTimeFunctions";
 
 function DashboardContent() {
   const [isNewMeetingOpen, setIsNewMeetingOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [meetings, setMeetings] = useState([]);
+  const [calendarEvents, setCalendarEvents] = useState([]);
   const navigate = useNavigate();
-  const [meetings, setMeetings] = useState({});
 
-  // Function to open the modal
+  // Open new meeting modal
   const handleOpenNewMeetingModal = () => {
     setIsNewMeetingOpen(true);
   };
 
-  // Function to close the modal
+  // Close new meeting modal
   const handleCloseNewMeetingModal = () => {
     setIsNewMeetingOpen(false);
-  };
-
-  // Function to handle adding a new meeting
-  const handleAddMeeting = (newMeeting) => {
-    console.log("New meeting added:", newMeeting);
-    // Here you can send the new meeting data to your server or state manager
-    // After adding the meeting, close the modal
-    handleCloseNewMeetingModal();
   };
 
   const handleAllMeetingsClick = () => {
     navigate("/meetings");
   };
+
   const handleDirectoryClick = () => {
     navigate("/directory");
   };
+
   const handleReportsClick = () => {
     navigate("/reports");
   };
@@ -56,20 +52,36 @@ function DashboardContent() {
   };
 
   const handleAddAttendee = (newAttendee) => {
-    // setAttendees([...attendees, newAttendee]);
     setShowAddModal(false);
   };
 
   useEffect(() => {
-    // Get today's date in YYYY-MM-DD format
-    const today = new Date().toISOString().split("T")[0];
-    setSelectedDate(today);
-  }, []);
+    // Fetch meetings from the backend
+    const fetchMeetings = async () => {
+      try {
+        const response = await axios.get("/meetings/getAllMeetings");
+        const meetingsData = response.data;
+        console.log(response.data);
 
-  useEffect(() => {
-    setMeetings(meetingsData); // Set the meetings data from JSON
-    const today = new Date().toISOString().split("T")[0];
-    setSelectedDate(today);
+        // Process meetings into calendar events
+        const events = meetingsData.map((meeting) => ({
+          title: meeting.title,
+          start: meeting.startDate, // Ensure startDate is in ISO format
+          id: meeting.id,
+        }));
+
+        setMeetings(meetingsData || []);
+        setCalendarEvents(events);
+
+        // Default to today's date
+        const today = new Date().toISOString().split("T")[0];
+        setSelectedDate(today);
+      } catch (error) {
+        console.error("Error fetching meetings:", error);
+      }
+    };
+
+    fetchMeetings();
   }, []);
 
   return (
@@ -86,16 +98,12 @@ function DashboardContent() {
               <h2 className="text-amber-700 text-xl font-bold mb-4">
                 Meetings Calendar
               </h2>
-              <div
-                className={`calendar-container ${
-                  showAddModal || isNewMeetingOpen ? "blur-background" : ""
-                }`}
-              >
+              <div className="calendar-container">
                 <FullCalendar
                   plugins={[dayGridPlugin, interactionPlugin]}
                   initialView="dayGridMonth"
                   dateClick={handleDateClick}
-                  events={[]}
+                  events={calendarEvents}
                   headerToolbar={{
                     left: "prev,next today",
                     center: "title",
@@ -107,10 +115,42 @@ function DashboardContent() {
                     week: "Week",
                     day: "Day",
                   }}
-                  // className="custom-calendar"
-                  dayCellClassNames={(date) =>
-                    date.dateStr === selectedDate ? "highlighted-date" : ""
-                  }
+                  eventContent={(eventInfo) => {
+                    // Custom dots for events
+                    const eventsOnDay = calendarEvents.filter(
+                      (e) =>
+                        e.start.split("T")[0] ===
+                        eventInfo.event.startStr.split("T")[0]
+                    );
+
+                    return (
+                      <div
+                        style={{ textAlign: "center", position: "relative" }}
+                      >
+                        {Array(eventsOnDay.length)
+                          .fill(null)
+                          .map((_, index) => (
+                            <span
+                              key={index}
+                              style={{
+                                display: "inline-block",
+                                width: "4px",
+                                height: "4px",
+                                backgroundColor: "green",
+                                borderRadius: "50%",
+                                margin: "1px",
+                              }}
+                            ></span>
+                          ))}
+                      </div>
+                    );
+                  }}
+                  dayCellContent={(dayCellInfo) => (
+                    // Ensure date numbers are visible
+                    <div>
+                      <span>{dayCellInfo.dayNumberText}</span>
+                    </div>
+                  )}
                 />
               </div>
             </div>
@@ -120,25 +160,32 @@ function DashboardContent() {
               <h2 className="text-amber-600 text-lg font-semibold mt-5 mb-2">
                 {selectedDate ? `Meetings on ${selectedDate}` : "Select a Date"}
               </h2>
-              {selectedDate && meetings[selectedDate] ? (
-                meetings[selectedDate].map((meeting, index) => (
-                  <div
-                    key={index}
-                    className="meeting-card transition-transform duration-200 ease-in-out hover:-translate-x-1  cursor-pointer px-3 py-[6px] flex justify-between items-center mb-3"
-                  >
-                    <div>
-                      <p className="text-gray-600 font-semibold">
-                        {meeting.title}
-                      </p>
-                      <p className="text-gray-400 text-sm font-medium">
-                        {meeting.time}
-                      </p>
+              {selectedDate &&
+              meetings.filter((m) => m.startDate.startsWith(selectedDate))
+                .length > 0 ? (
+                meetings
+                  .filter((m) => m.startDate.startsWith(selectedDate))
+                  .map((meeting) => (
+                    <div
+                      key={meeting.id}
+                      className="meeting-card transition-transform duration-200 ease-in-out hover:-translate-x-1 cursor-pointer px-3 py-[6px] items-center mb-3"
+                    >
+                      <div>
+                        <p className="text-gray-600 font-semibold line-clamp-1">
+                          {meeting.title}
+                        </p>
+                        <div className="flex justify-between pt-3">
+                          <p className="text-gray-400 text-sm font-medium">
+                            {formatTime(meeting.startTime)} -{" "}
+                            {formatTime(meeting.endTime)}
+                          </p>
+                          <span className="text-gray-400 font-semibold text-sm">
+                            {meeting.location || "Virtual"}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <span className="text-gray-400 font-semibold text-sm">
-                      Virtual
-                    </span>
-                  </div>
-                ))
+                  ))
               ) : (
                 <p className="text-gray-500">
                   No meetings scheduled for this date.

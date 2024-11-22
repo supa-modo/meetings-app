@@ -31,7 +31,7 @@ const AttendanceTable = ({ meetingDays, attendees }) => {
         ),
       ];
       tableRows.push(rowData);
-      console.log(`${backend_Url}${attendee.signature}`)
+      // console.log(`${backend_Url}${attendee.signature}`)
     });
 
     doc.setFontSize(18);

@@ -70,8 +70,8 @@ const ViewAttendeeModal = ({ attendee, onClose }) => {
             </p>
             <p className="text-gray-500">
               <strong className="font-medium ">Meetings Attended:</strong>
-              <span className="pl-4 font-semibold text-blue-700 text-[15px]">
-                {23}
+              <span className="pl-3 font-semibold text-blue-700 text-[15px]">
+                {meetings?.length || 0}
               </span>
             </p>
           </div>

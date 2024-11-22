@@ -102,3 +102,28 @@
   filter: blur(2px);
   pointer-events: none; /* Prevents interactions while modal is open */
 }
+
+/* Remove the default event background */
+.fc-event {
+  background: none !important;
+  border: none !important;
+  position: absolute;
+  top: 0;
+}
+
+/* Prevent dots from overlapping the date number */
+.fc-daygrid-day-top {
+  position: relative;
+  z-index: 2;
+  background: none;
+}
+
+/* Ensure dots appear below the date number */
+.fc-daygrid-day-events {
+  /* position: absolute;
+  bottom: 0; */
+  width: 100%;
+  text-align: center;
+  z-index: 1;
+  pointer-events: none;
+}
