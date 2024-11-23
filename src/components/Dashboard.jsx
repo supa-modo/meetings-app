@@ -15,14 +15,16 @@ import { useNavigate } from "react-router-dom";
 import NewMeetingModal from "./AddMeetingModal";
 import AddAttendeeModal from "./AddAttendeeModal";
 import axios from "../utils/axios";
-import { formatTime } from "../utils/dateTimeFunctions";
+import { formatDate, formatTime } from "../utils/dateTimeFunctions";
 
 function DashboardContent() {
   const [isNewMeetingOpen, setIsNewMeetingOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [meetings, setMeetings] = useState([]);
+  const [sortedMeetings, setSortedMeetings] = useState([]);
   const [calendarEvents, setCalendarEvents] = useState([]);
+  const [attendees, setAttendees] = useState([]);
   const navigate = useNavigate();
 
   // Open new meeting modal
@@ -61,8 +63,10 @@ function DashboardContent() {
       try {
         const response = await axios.get("/meetings/getAllMeetings");
         const meetingsData = response.data;
-        console.log(response.data);
-
+        const sortedMeetings = response.data.sort(
+          (a, b) => new Date(a.date) - new Date(b.date)
+        );
+        setSortedMeetings(sortedMeetings);
         // Process meetings into calendar events
         const events = meetingsData.map((meeting) => ({
           title: meeting.title,
@@ -83,6 +87,25 @@ function DashboardContent() {
 
     fetchMeetings();
   }, []);
+
+  useEffect(() => {
+    fetchAttendees();
+  });
+
+  const fetchAttendees = async () => {
+    try {
+      const response = await axios.get("/attendees/getAllAttendees");
+      setAttendees(response.data);
+    } catch (error) {
+      console.error("Error fetching attendees:", error);
+      setModalNotificationMessage(
+        "Error fetching attendees, check your internet connection:",
+        error
+      );
+      setShowNotificationModal(true);
+      setModalNotificationType("error");
+    }
+  };
 
   return (
     <main className="px-6 pt-3 pb-6 bg-gray-100 min-h-screen flex-1">
@@ -134,9 +157,9 @@ function DashboardContent() {
                               key={index}
                               style={{
                                 display: "inline-block",
-                                width: "4px",
-                                height: "4px",
-                                backgroundColor: "green",
+                                width: "3px",
+                                height: "3px",
+                                backgroundColor: "red",
                                 borderRadius: "50%",
                                 margin: "1px",
                               }}
@@ -168,6 +191,9 @@ function DashboardContent() {
                   .map((meeting) => (
                     <div
                       key={meeting.id}
+                      onClick={() =>
+                        navigate(`/meetings/${meeting.id}/${meeting.startDate}`)
+                      }
                       className="meeting-card transition-transform duration-200 ease-in-out hover:-translate-x-1 cursor-pointer px-3 py-[6px] items-center mb-3"
                     >
                       <div>
@@ -258,55 +284,44 @@ function DashboardContent() {
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {/* Upcoming Meetings */}
           <div className="bg-white p-4 rounded-md shadow-lg col-span-2 overflow-y-auto max-h-[300px]">
-            <h2 className="text-blue-600 text-lg font-bold mb-3">
+            <h2 className="text-gray-700 text-lg font-bold mb-3">
               Upcoming Meetings
             </h2>
             <ul className="space-y-3">
-              <li className="p-4 bg-gray-100 rounded-md flex justify-between items-center">
-                <div>
-                  <p className="text-gray-700 font-semibold">
-                    Pre-Budget Committee Meeting
-                  </p>
-                  <p className="text-sm text-gray-500">Tomorrow at 10:00 AM</p>
-                </div>
-                <span className="text-gray-400 text-sm">Virtual</span>
-              </li>
-              <li className="p-4 bg-gray-100 rounded-md flex justify-between items-center">
-                <div>
-                  <p className="text-gray-700 font-semibold">
-                    Pre-Budget Committee Meeting
-                  </p>
-                  <p className="text-sm text-gray-500">Tomorrow at 10:00 AM</p>
-                </div>
-                <span className="text-gray-400 text-sm">Virtual</span>
-              </li>
-              <li className="p-4 bg-gray-100 rounded-md flex justify-between items-center">
-                <div>
-                  <p className="text-gray-700 font-semibold">
-                    Pre-Budget Committee Meeting
-                  </p>
-                  <p className="text-sm text-gray-500">Tomorrow at 10:00 AM</p>
-                </div>
-                <span className="text-gray-400 text-sm">Virtual</span>
-              </li>
-              <li className="p-4 bg-gray-100 rounded-md flex justify-between items-center">
-                <div>
-                  <p className="text-gray-700 font-semibold">
-                    Pre-Budget Committee Meeting
-                  </p>
-                  <p className="text-sm text-gray-500">Tomorrow at 10:00 AM</p>
-                </div>
-                <span className="text-gray-400 text-sm">Virtual</span>
-              </li>
-              <li className="p-4 bg-gray-100 rounded-md flex justify-between items-center">
-                <div>
-                  <p className="text-gray-700 font-semibold">
-                    Pre-Budget Committee Meeting
-                  </p>
-                  <p className="text-sm text-gray-500">Tomorrow at 10:00 AM</p>
-                </div>
-                <span className="text-gray-400 text-sm">Virtual</span>
-              </li>
+              {meetings.length > 0 ? (
+                meetings.map((meeting, index) => (
+                  <li
+                    key={index}
+                    className="p-4 bg-gray-100 font-semibold rounded-md flex justify-between items-center"
+                  >
+                    <div>
+                      <p className="text-lg text-amber-800 font-semibold line-clamp-1">
+                        {meeting.title}
+                      </p>
+                      <p className=" text-gray-500">
+                        {formatDate(meeting.startDate)} -{" "}
+                        {formatDate(meeting.endDate)}
+                      </p>
+                    </div>
+                    <div className="flex-col">
+                      <p className="text-gray-400  text-end">
+                        {meeting.type === "physical"
+                          ? "Physical Meeting"
+                          : meeting.type === "virtual"
+                          ? "Virtual Meeting"
+                          : meeting.type === "hybrid"
+                          ? "Hybrid Meeting"
+                          : "Unknown Meeting Type"}
+                      </p>
+                      <p className="text-gray-400 ">{meeting.location}</p>
+                    </div>
+                  </li>
+                ))
+              ) : (
+                <p className="text-gray-500 text-center">
+                  No upcoming meetings
+                </p>
+              )}
             </ul>
           </div>
 
@@ -371,7 +386,7 @@ function DashboardContent() {
             <div className="p-4 bg-green-100 rounded-md flex items-center justify-between">
               <div>
                 <p className="text-gray-700 font-semibold">Total Meetings</p>
-                <p className="text-2xl font-bold">52</p>
+                <p className="text-2xl font-bold">{meetings.length}</p>
               </div>
             </div>
             <div className="p-4 bg-blue-100 rounded-md flex items-center justify-between">
@@ -383,7 +398,7 @@ function DashboardContent() {
             <div className="p-4 bg-purple-100 rounded-md flex items-center justify-between">
               <div>
                 <p className="text-gray-700 font-semibold">Total Attendees</p>
-                <p className="text-2xl font-bold">430</p>
+                <p className="text-2xl font-bold">{attendees.length}</p>
               </div>
             </div>
             <div className="p-4 bg-yellow-100 rounded-md flex items-center justify-between">
